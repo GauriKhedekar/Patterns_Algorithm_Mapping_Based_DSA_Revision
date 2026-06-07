@@ -980,6 +980,55 @@ form inversions.
 count += (mid - i + 1)
 ```
 
+## Code:-
+
+```java
+class Solution {
+    public long numberOfInversions(int[] nums) {
+        return mergeSort(nums, 0, nums.length - 1);
+    }
+
+    public int mergeSort(int[] nums, int low, int high){
+        int cnt = 0;
+        if(low >= high) return 0;
+        int mid = (low + high) / 2;
+        cnt += mergeSort(nums, low, mid);
+        cnt += mergeSort(nums, mid + 1, high);
+        cnt += merge(nums, low, mid, high);
+        return cnt;
+    }
+
+    public int merge(int[] nums, int low, int mid, int high){
+        int left = low;
+        int right = mid + 1;
+        int cnt = 0;
+        ArrayList<Integer> list = new ArrayList<>();
+        while(left <= mid && right <= high){
+            if(nums[left] <= nums[right]){
+                list.add(nums[left++]);
+            }
+            else{
+                cnt += (mid - left + 1);
+                list.add(nums[right++]);
+            }
+        }
+            while(left <= mid){
+                list.add(nums[left++]);
+            }
+
+            while(right <= high){
+                list.add(nums[right++]);
+            }
+        
+        for(int i = low; i <= high; i++){
+            nums[i] = list.get(i - low);
+        }
+        return cnt;
+
+    }
+}
+```
+
 ### Interview Explanation
 
 Suppose:
@@ -1046,7 +1095,63 @@ Count pairs:
 i < j
 arr[i] > 2 * arr[j]
 ```
+## Code:-
 
+```java
+class Solution {
+    public int reversePairs(int[] nums) {
+        return mergeSort(nums, 0, nums.length - 1);
+    }
+
+    public int mergeSort(int[] nums, int low, int high){
+        int cnt = 0;
+        if(low >= high) return 0;
+        int mid = (low + high) / 2;
+        cnt += mergeSort(nums, low, mid);
+        cnt += mergeSort(nums, mid + 1, high);
+        cnt += countPairs(nums,low, mid, high);
+        merge(nums, low, mid, high);
+        return cnt;
+    }
+
+    public int countPairs(int[] nums, int low, int mid, int high){
+        int cnt = 0;
+        int right = mid + 1;
+        for(int i = low; i <= mid; i++){
+        while(right <= high && (long)nums[i] > 2 * (long)nums[right]){
+           right++;
+        } 
+        cnt += right - (mid + 1);
+        } 
+    return cnt;
+    }
+
+    public void merge(int[] nums, int low, int mid, int high){
+        int left = low;
+        int right = mid + 1;
+        ArrayList<Integer> merge = new ArrayList<>();
+        while(left <= mid && right <= high){
+            if(nums[left] <= nums[right]){
+                merge.add(nums[left++]);
+            }
+            else{
+                merge.add(nums[right++]);
+            }
+        }
+        while(left <= mid){
+            merge.add(nums[left++]);
+        }
+        while(right <= high){
+            merge.add(nums[right++]);
+        }
+        for(int i = low; i <= high; i++){
+            nums[i] = merge.get(i - low);
+        }
+    }
+}    
+
+
+```
 ---
 
 ## Optimal Idea
