@@ -2279,6 +2279,72 @@ reverse(arr, 0, n - 1);
 
 ## A) Union of Two Sorted Arrays
 
+## Code:-
+
+```java
+class Solution {
+    public int[] unionArray(int[] nums1, int[] nums2) {
+        int i = 0;
+        int j = 0;
+
+        ArrayList<Integer> union = new ArrayList<>();
+
+        while(i < nums1.length && j < nums2.length){
+            //skip duplicates from nums1 Array
+            if(i > 0 && nums1[i] == nums1[i - 1]){
+                i++;
+                continue;
+            }
+            if(j > 0 && nums2[j] == nums2[j - 1]){
+                j++;
+                continue;
+            }
+
+            //normal comparison now less than, greater than and equal to
+            if(nums1[i] < nums2[j]){
+                union.add(nums1[i]);
+                i++;
+            }
+            else if(nums1[i] > nums2[j]){
+                union.add(nums2[j]);
+                j++;
+            }
+            else{
+                //if(nums1[i] == nums2[j])
+                union.add(nums1[i]);//or union.add(nums2[j])
+                i++;
+                j++;
+            }
+        }
+        
+        while(i < nums1.length){
+            //only add unique elements, no checks as only one array lefts at the end
+            if(i == 0 || nums1[i] != nums1[i - 1]){
+                union.add(nums1[i]);
+              
+            } 
+            i++;
+        }
+
+        while(j < nums2.length){
+             //only add unique elements
+             if(j == 0 || nums2[j] != nums2[j - 1]){
+                union.add(nums2[j]);
+             
+             }
+             j++;
+        }
+        
+        int n = union.size();
+        int[] result = new int[n];
+        for(int l = 0; l < n; l++){
+            result[l] = union.get(l);
+        }
+        return result;
+        
+    }
+}
+```
 ### Core Idea
 
 Use two pointers.
@@ -2329,73 +2395,31 @@ Two Pointer Merge
 
 ## B) Merge Two Sorted Arrays Without Extra Space
 
-### Core Idea
+- nums1 is of size num1 + nums2
 
-Use the Gap Method (Shell Sort Idea).
-
-### Interview Explanation
-
-#### State
-
-```text
-gap
-left
-right
+```java
+class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int i = m - 1;
+        int j = n - 1;
+        int k = m  + n - 1;
+        while(i >= 0 && j >= 0){
+            if(nums1[i] > nums2[j]){
+                nums1[k--] = nums1[i--];
+            }
+            else{
+                nums1[k--] = nums2[j--];
+            }
+        }
+        while(i >= 0){
+            nums1[k--] = nums1[i--];
+        }
+        while(j >= 0){
+            nums1[k--] = nums2[j--];
+        }
+    }
+}
 ```
-
-#### Task
-
-Compare elements gap distance apart.
-
-If out of order:
-
-```text
-swap
-```
-
-#### Observation
-
-Large elements move right.
-
-Small elements move left.
-
-Eventually:
-
-```text
-gap = 1
-```
-
-and arrays become completely merged.
-
-### Recognition Clues
-
-```text
-Merge Without Extra Space
-No Extra Array
-In-place Merge
-```
-
-Think:
-
-```text
-Gap Method
-```
-
-### Complexity
-
-| Metric | Value                 |
-| ------ | --------------------- |
-| Time   | O((N + M) log(N + M)) |
-| Space  | O(1)                  |
-
----
-
-## Quick Revision
-
-| Problem                   | Pattern           |
-| ------------------------- | ----------------- |
-| Union of Sorted Arrays    | Two Pointer Merge |
-| Merge Without Extra Space | Gap Method        |
 
 ---
 
