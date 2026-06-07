@@ -3381,7 +3381,7 @@ private void swap(
 
 ## Problem
 
-Find element appearing:
+Find the element appearing:
 
 ```text
 > N/2 times
@@ -3391,26 +3391,52 @@ Find element appearing:
 
 ## Core Idea
 
-Majority element survives all cancellations.
+Track:
+
+```text
+element
+count
+```
+
+Different elements cancel each other.
+
+Since the majority element appears more than all other elements combined, it survives all cancellations.
 
 ---
 
 ## Interview Explanation
 
-### State
-
-```text
-candidate
-count
-```
-
 ### Observation
 
-Different elements cancel each other.
+If:
 
-Majority element appears more than all others combined.
+```text
+count == 0
+```
 
-Hence it survives.
+Current element becomes the new candidate.
+
+If current element equals candidate:
+
+```text
+count++
+```
+
+Otherwise:
+
+```text
+count--
+```
+
+After one pass:
+
+```text
+element
+```
+
+is the potential majority candidate.
+
+Verify its frequency in a second pass.
 
 ---
 
@@ -3420,12 +3446,34 @@ Hence it survives.
 2 2 1 1 1 2 2
 ```
 
-Cancellation:
+Voting Process:
 
 ```text
-2 vs 1
+2 -> count = 1
+2 -> count = 2
+1 -> count = 1
+1 -> count = 0
+1 -> candidate = 1
+2 -> count = 0
+2 -> candidate = 2
+```
 
-2 survives
+Final Candidate:
+
+```text
+2
+```
+
+Verification confirms:
+
+```text
+2 occurs 4 times
+```
+
+Answer:
+
+```text
+2
 ```
 
 ---
@@ -3434,51 +3482,86 @@ Cancellation:
 
 ```text
 Majority Element
-More than N/2
+More than N/2 times
 ```
 
 Think:
 
 ```text
-Boyer Moore Voting
+Boyer Moore Voting Algorithm
 ```
+
+---
+
+## Why Verification?
+
+Example:
+
+```text
+[1,2,3,4]
+```
+
+Candidate after voting may be:
+
+```text
+4
+```
+
+But:
+
+```text
+4 does not occur > N/2 times
+```
+
+Therefore verification is required.
 
 ---
 
 ## TC / SC
 
 | Time | Space |
-| ---- | ----- |
-| O(N) | O(1)  |
+|------|--------|
+| O(N) | O(1) |
 
 ---
 
 ## Java Code
 
 ```java
-public int majorityElement(int[] nums) {
+class Solution {
+    public int majorityElement(int[] nums) {
 
-    int candidate = 0;
-    int count = 0;
+        int n = nums.length;
 
-    for(int num : nums){
+        int cnt = 0;
+        int element = nums[0];
 
-        if(count == 0){
+        for(int i = 0; i < n; i++) {
 
-            candidate = num;
+            if(cnt == 0) {
+                element = nums[i];
+            }
+
+            if(nums[i] != element) {
+                cnt--;
+            }
+            else {
+                cnt++;
+            }
         }
 
-        if(num == candidate){
+        int cnt1 = 0;
 
-            count++;
+        for(int i = 0; i < n; i++) {
+            if(nums[i] == element) cnt1++;
         }
-        else{
 
-            count--;
+        if(cnt1 > n / 2) {
+            return element;
         }
+
+        return -1;
     }
-
-    return candidate;
 }
 ```
 
@@ -3509,11 +3592,11 @@ can satisfy this condition.
 Track:
 
 ```text
-candidate1
-candidate2
+ele1
+ele2
 
-count1
-count2
+cnt1
+cnt2
 ```
 
 ---
@@ -3522,31 +3605,198 @@ count2
 
 ### Observation
 
-For N/3 majority:
+If an element appears more than:
 
 ```text
-Maximum 2 answers possible
+N/3 times
 ```
 
-Therefore track two candidates.
+then at most:
 
-Cancel remaining elements.
+```text
+2 elements
+```
 
-Verify at the end.
+can satisfy this condition.
+
+Reason:
+
+```text
+3 elements occurring > N/3 times
+would exceed N.
+```
+
+Therefore we only need:
+
+```text
+2 candidates
+```
+
+---
+
+## Voting Logic
+
+For every element:
+
+### Case 1
+
+If:
+
+```text
+cnt1 == 0
+and current element != ele2
+```
+
+Make it:
+
+```text
+ele1
+```
+
+---
+
+### Case 2
+
+If:
+
+```text
+cnt2 == 0
+and current element != ele1
+```
+
+Make it:
+
+```text
+ele2
+```
+
+---
+
+### Case 3
+
+If current element equals:
+
+```text
+ele1
+```
+
+```text
+cnt1++
+```
+
+---
+
+### Case 4
+
+If current element equals:
+
+```text
+ele2
+```
+
+```text
+cnt2++
+```
+
+---
+
+### Case 5
+
+Otherwise:
+
+```text
+cnt1--
+cnt2--
+```
+
+This removes groups of:
+
+```text
+3 different elements
+```
+
+leaving only possible majority candidates.
+
+---
+
+## Verification Step
+
+After voting:
+
+```text
+ele1
+ele2
+```
+
+are only potential candidates.
+
+Count their actual frequencies.
+
+Add them to the answer only if:
+
+```text
+frequency > N/3
+```
+
+---
+
+## Example
+
+```text
+[1,1,1,3,3,2,2,2]
+```
+
+After voting:
+
+```text
+ele1 = 1
+ele2 = 2
+```
+
+Verification:
+
+```text
+1 -> 3 times
+2 -> 3 times
+
+N = 8
+N/3 = 2
+```
+
+Answer:
+
+```text
+[1,2]
+```
 
 ---
 
 ## Recognition Clues
 
 ```text
-More than N/3
 Majority Element II
+More than N/3 times
 ```
 
 Think:
 
 ```text
-Extended Boyer Moore
+Extended Boyer Moore Voting
+```
+
+---
+
+## Memory Trick
+
+```text
+N/2 majority
+→ Track 1 candidate
+
+N/3 majority
+→ Track 2 candidates
+
+N/k majority
+→ Track (k - 1) candidates
 ```
 
 ---
@@ -3554,81 +3804,81 @@ Extended Boyer Moore
 ## TC / SC
 
 | Time | Space |
-| ---- | ----- |
-| O(N) | O(1)  |
+|------|--------|
+| O(N) | O(1) |
 
 ---
 
 ## Java Code
 
 ```java
-public List<Integer> majorityElement(
-    int[] nums
-){
+class Solution {
+    public List<Integer> majorityElement(int[] nums) {
 
-    int candidate1 = 0;
-    int candidate2 = 0;
+        int n = nums.length;
 
-    int count1 = 0;
-    int count2 = 0;
+        int ele1 = Integer.MIN_VALUE;
+        int ele2 = Integer.MIN_VALUE;
 
-    for(int num : nums){
+        int cnt1 = 0;
+        int cnt2 = 0;
 
-        if(candidate1 == num){
+        for(int i = 0; i < n; i++) {
 
-            count1++;
+            if(cnt1 == 0 && nums[i] != ele2) {
+
+                ele1 = nums[i];
+                cnt1++;
+            }
+
+            else if(cnt2 == 0 && nums[i] != ele1) {
+
+                ele2 = nums[i];
+                cnt2++;
+            }
+
+            else if(nums[i] == ele1) {
+
+                cnt1++;
+            }
+
+            else if(nums[i] == ele2) {
+
+                cnt2++;
+            }
+
+            else {
+
+                cnt1--;
+                cnt2--;
+            }
         }
 
-        else if(candidate2 == num){
+        int mini = n / 3;
 
-            count2++;
+        int cnt3 = 0;
+        int cnt4 = 0;
+
+        for(int i = 0; i < n; i++) {
+
+            if(nums[i] == ele1) cnt3++;
+
+            if(nums[i] == ele2) cnt4++;
         }
 
-        else if(count1 == 0){
+        List<Integer> res = new ArrayList<>();
 
-            candidate1 = num;
-            count1 = 1;
-        }
+        if(cnt3 > mini) res.add(ele1);
 
-        else if(count2 == 0){
+        if(cnt4 > mini) res.add(ele2);
 
-            candidate2 = num;
-            count2 = 1;
-        }
-
-        else{
-
-            count1--;
-            count2--;
-        }
+        return res;
     }
-
-    count1 = 0;
-    count2 = 0;
-
-    for(int num : nums){
-
-        if(num == candidate1) count1++;
-
-        else if(num == candidate2) count2++;
-    }
-
-    List<Integer> ans =
-        new ArrayList<>();
-
-    int limit = nums.length / 3;
-
-    if(count1 > limit)
-        ans.add(candidate1);
-
-    if(count2 > limit)
-        ans.add(candidate2);
-
-    return ans;
 }
 ```
 
 ---
+
 
 # 22. Kadane's Algorithm Pattern
 
@@ -3825,43 +4075,236 @@ public int[] maxSubArrayIndices(
 
 # C) Maximum Product Subarray
 
-## Core Idea
+## Problem
 
-Negative numbers can flip:
+Find:
 
 ```text
-Maximum ↔ Minimum
+Maximum Product
+of any contiguous subarray
 ```
 
-Hence maintain both.
+---
+
+## Core Idea
+
+Use:
+
+```text
+Prefix Product
+Suffix Product
+```
+
+and take the maximum product seen.
 
 ---
 
 ## Interview Explanation
 
-### State
-
-```text
-prefixProduct
-suffixProduct
-```
-
-or
-
-```text
-currentMax
-currentMin
-```
-
 ### Observation
 
-Negative × Negative
+Unlike Maximum Sum Subarray:
 
 ```text
-Positive
+Negative × Negative = Positive
 ```
 
-Therefore minimum product can become maximum later.
+A large product may be formed after encountering another negative number.
+
+Also:
+
+```text
+0 breaks the product chain
+```
+
+So whenever product becomes:
+
+```text
+0
+```
+
+restart it from:
+
+```text
+1
+```
+
+---
+
+## Why Prefix + Suffix?
+
+Consider:
+
+```text
+[-1,-2,-3]
+```
+
+Total product:
+
+```text
+-6
+```
+
+But answer is:
+
+```text
+6
+```
+
+from:
+
+```text
+[-2,-3]
+```
+
+If the count of negatives is odd:
+
+```text
+Remove either
+
+leftmost negative
+or
+rightmost negative
+```
+
+To capture both possibilities:
+
+```text
+Traverse from left
+Traverse from right
+```
+
+using:
+
+```text
+prefix
+suffix
+```
+
+---
+
+## Algorithm
+
+Maintain:
+
+```text
+prefix
+suffix
+maxProd
+```
+
+For every index:
+
+### Reset Products
+
+If:
+
+```text
+prefix == 0
+```
+
+then:
+
+```text
+prefix = 1
+```
+
+If:
+
+```text
+suffix == 0
+```
+
+then:
+
+```text
+suffix = 1
+```
+
+---
+
+### Update Products
+
+```text
+prefix *= nums[i]
+
+suffix *= nums[n-i-1]
+```
+
+---
+
+### Update Answer
+
+```text
+maxProd =
+max(maxProd,
+    max(prefix,suffix))
+```
+
+---
+
+## Dry Run
+
+Array:
+
+```text
+[2,3,-2,4]
+```
+
+| i | Prefix | Suffix | Max |
+|---|---------|---------|-----|
+| 0 | 2 | 4 | 4 |
+| 1 | 6 | -8 | 6 |
+| 2 | -12 | -24 | 6 |
+| 3 | -48 | -48 | 6 |
+
+Answer:
+
+```text
+6
+```
+
+Subarray:
+
+```text
+[2,3]
+```
+
+---
+
+## Another Example
+
+```text
+[-2,3,-4]
+```
+
+Prefix:
+
+```text
+-2
+-6
+24
+```
+
+Suffix:
+
+```text
+-4
+-12
+24
+```
+
+Maximum:
+
+```text
+24
+```
+
+Subarray:
+
+```text
+[-2,3,-4]
+```
 
 ---
 
@@ -3876,66 +4319,113 @@ Negative Numbers
 Think:
 
 ```text
-Track Max and Min
+Prefix Product
++
+Suffix Product
 ```
+
+or
+
+```text
+BOTH directions traversal
+```
+
+---
+
+## Why Reset at Zero?
+
+Example:
+
+```text
+[2,3,0,4,5]
+```
+
+After:
+
+```text
+0
+```
+
+previous product becomes useless.
+
+Therefore restart:
+
+```text
+prefix = 1
+suffix = 1
+```
+
+to begin a new subarray.
 
 ---
 
 ## TC / SC
 
 | Time | Space |
-| ---- | ----- |
-| O(N) | O(1)  |
+|------|--------|
+| O(N) | O(1) |
 
 ---
 
 ## Java Code
 
 ```java
-public int maxProduct(int[] nums) {
+class Solution {
+    public int maxProduct(int[] nums) {
 
-    int currentMax = nums[0];
-    int currentMin = nums[0];
+        int n = nums.length;
 
-    int answer = nums[0];
+        int prefix = 1;
+        int suffix = 1;
 
-    for(int i = 1; i < nums.length; i++){
+        int maxProd = Integer.MIN_VALUE;
 
-        int num = nums[i];
+        for(int i = 0; i < n; i++) {
 
-        if(num < 0){
+            if(prefix == 0) {
+                prefix = 1;
+            }
 
-            int temp =
-                currentMax;
+            if(suffix == 0) {
+                suffix = 1;
+            }
 
-            currentMax =
-                currentMin;
+            prefix *= nums[i];
 
-            currentMin =
-                temp;
+            suffix *= nums[n - i - 1];
+
+            maxProd = Math.max(
+                maxProd,
+                Math.max(prefix, suffix)
+            );
         }
 
-        currentMax =
-            Math.max(
-                num,
-                currentMax * num
-            );
-
-        currentMin =
-            Math.min(
-                num,
-                currentMin * num
-            );
-
-        answer =
-            Math.max(
-                answer,
-                currentMax
-            );
+        return maxProd;
     }
-
-    return answer;
 }
+```
+
+---
+
+## Memory Trick
+
+```text
+Maximum Sum Subarray
+→ Kadane
+
+Maximum Product Subarray
+→ Prefix + Suffix
+
+Reason:
+Negative numbers can flip signs.
+```
+
+### One-Liner
+
+```text
+Scan from both ends,
+reset at zero,
+keep maximum product seen.
 ```
 
 ---
