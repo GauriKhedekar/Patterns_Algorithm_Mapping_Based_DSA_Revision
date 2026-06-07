@@ -272,6 +272,272 @@ fib(n)
 
 Many subproblems are recalculated repeatedly.
 
+# Time Complexity of Recursive Fibonacci
+
+The recursive approach for calculating Fibonacci numbers has a time complexity of **O(2ⁿ)**. This exponential growth happens because the algorithm repeatedly recalculates the same numbers.
+
+---
+
+# 1. The Intuitive Explanation
+
+To find a Fibonacci number, the algorithm calls itself twice (to get the two previous numbers):
+
+```text
+F(n) = F(n-1) + F(n-2)
+```
+
+If you visualize this as an upside-down tree, the top node (for `F(n)`) branches into two nodes. Each of those branches into two more, and so on, until it reaches the base cases `F(1)` and `F(0)`.
+
+### The Problem
+
+The tree grows at an exponential rate of:
+
+```text
+2^n
+```
+
+### The Redundancy
+
+To calculate `F(5)`, the function recalculates:
+
+```text
+F(3) twice
+F(2) three times
+```
+
+As `n` gets larger, the number of duplicate calculations explodes, making this approach extremely slow for large inputs.
+
+---
+
+# 2. Solving with the Akra-Bazzi Method
+
+While often used for divide-and-conquer algorithms, the Akra-Bazzi method can mathematically prove the complexity of Fibonacci recursion.
+
+The recurrence relation for Fibonacci is:
+
+```text
+T(n) = T(n-1) + T(n-2) + c
+```
+
+To apply Akra-Bazzi, we use the general form:
+
+```text
+Σ(ai * bi^p) = 1
+```
+
+For Fibonacci:
+
+```text
+a1 = 1
+b1 = 1
+
+a2 = 1
+b2 = 1
+```
+
+(using approximations for `T(n-1)` and `T(n-2)`).
+
+Solving the equation for `p` yields the **Golden Ratio**:
+
+```text
+φ = (1 + √5) / 2
+```
+
+Numerically:
+
+```text
+φ ≈ 1.618
+```
+
+Since the constant work `c` is only a polynomial term, the dominant term determines the complexity.
+
+Therefore:
+
+```text
+T(n) = O(φ^n)
+```
+
+or approximately:
+
+```text
+O(1.618^n)
+```
+
+Since:
+
+```text
+1.618^n < 2^n
+```
+
+it is commonly written as:
+
+```text
+O(2^n)
+```
+
+which is a simpler exponential upper bound.
+
+---
+
+# 3. Common Time Complexity of Non-Tail Recursion
+
+A **non-tail recursive function** is one where the recursive call is **not the last operation executed**.
+
+Example:
+
+```java
+return fib(n-1) + fib(n-2);
+```
+
+The addition still has to be performed after the recursive calls return, so this is non-tail recursion.
+
+---
+
+## Single Branch Recursion
+
+Example:
+
+```text
+T(n) = T(n-1) + O(1)
+```
+
+This creates a straight-line call stack:
+
+```text
+n
+|
+n-1
+|
+n-2
+|
+...
+```
+
+Time Complexity:
+
+```text
+O(n)
+```
+
+---
+
+## Multiple Branch Recursion
+
+Example:
+
+```text
+T(n) = T(n-1) + T(n-2)
+```
+
+This creates a branching recursion tree:
+
+```text
+        n
+      /   \
+   n-1   n-2
+   / \    / \
+ ...
+```
+
+The number of function calls grows exponentially.
+
+The complexity is roughly:
+
+```text
+O(k^n)
+```
+
+where:
+
+```text
+k = number of recursive calls per frame
+```
+
+For Fibonacci:
+
+```text
+k = 2
+```
+
+Therefore:
+
+```text
+O(2^n)
+```
+
+---
+
+# Why Dynamic Programming is Better
+
+To avoid recalculating the same Fibonacci numbers repeatedly, developers use **Dynamic Programming (Memoization)**.
+
+Memoization stores previously computed results and reuses them whenever needed.
+
+This reduces the complexity from:
+
+```text
+O(2^n)
+```
+
+to:
+
+```text
+O(n)
+```
+
+which is dramatically faster for large values of `n`.
+
+---
+
+# Summary
+
+### Recursive Fibonacci
+
+```text
+F(n) = F(n-1) + F(n-2)
+```
+
+### Recurrence Relation
+
+```text
+T(n) = T(n-1) + T(n-2) + O(1)
+```
+
+### Actual Complexity
+
+```text
+O(1.618^n)
+```
+
+### Commonly Written As
+
+```text
+O(2^n)
+```
+
+### Reason
+
+```text
+- Two recursive calls at each step
+- Exponentially growing recursion tree
+- Repeated calculations of the same subproblems
+```
+
+### Space Complexity
+
+```text
+O(n)
+```
+
+### Optimized Solution
+
+```text
+Dynamic Programming (Memoization)
+
+Time Complexity  : O(n)
+Space Complexity : O(n)
+```
+
 ---
 
 # 6. Reverse Array Using Recursion
