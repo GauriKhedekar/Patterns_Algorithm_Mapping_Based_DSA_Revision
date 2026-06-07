@@ -4645,7 +4645,7 @@ class Solution {
         int neg = 1;
 
         for(int num : nums){
-            if(num > 0){
+            if(num >= 0){
                 ans[pos] = num;
                 pos += 2;
             }
