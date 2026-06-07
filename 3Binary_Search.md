@@ -1,4 +1,4 @@
-# 33. Binary Search Variant: Bounds Pattern
+# 32. Binary Search Variant: Bounds Pattern
 
 ## Problems
 
