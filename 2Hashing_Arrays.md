@@ -5411,7 +5411,56 @@ left/right
 
 Skip duplicates
 ```
+---
+### 4sum Java code:-
 
+```java
+class Solution {
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+
+        for(int i = 0; i < n; i++){
+            if(i > 0 && nums[i - 1] == nums[i]) continue;
+            for(int j = i + 1; j < n; j++){
+                if(j > i + 1 && nums[j - 1] == nums[j]){
+                    continue;
+                }
+                int k = j + 1;
+                int l = n - 1;
+                while(k < l){
+                    long sum = (long)nums[i] + nums[j] + nums[k] + nums[l];
+                    if(sum == target){
+                        List<Integer> quad = new ArrayList<>();
+                        quad.add(nums[i]);
+                        quad.add(nums[j]);
+                        quad.add(nums[k]);
+                        quad.add(nums[l]);
+                        res.add(quad);
+                        k++;
+                        l--;
+                        while(k < l && nums[k - 1] == nums[k]){
+                            k++;
+                        }
+                        while(k < l && nums[l + 1] == nums[l]){
+                            l--;
+                        }
+
+                    }
+                    else if(sum < target){
+                         k++;
+                    }
+                    else{
+                        l--;
+                    }
+                }
+            }
+        }
+       return res;
+    }
+}
+```
 ---
 
 # 31. Interval Merging Pattern
@@ -5471,45 +5520,63 @@ Overlapping segments
 ## Java Code
 
 ```java
-class Solution {
-    public int[][] merge(int[][] intervals) {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-        Arrays.sort(
-            intervals,
-            (a,b) ->
-                Integer.compare(a[0], b[0])
-        );
-
-        List<int[]> merged =
-                new ArrayList<>();
-
-        for(int[] interval : intervals){
-
-            if(merged.isEmpty() ||
-               merged.get(
-                    merged.size()-1
-               )[1] < interval[0]){
-
-                merged.add(interval);
-            }
-            else{
-
-                merged.get(
-                    merged.size()-1
-                )[1] = Math.max(
-                        merged.get(
-                            merged.size()-1
-                        )[1],
-                        interval[1]
-                );
-            }
-        }
-
-        return merged.toArray(
-                new int[merged.size()][]
-        );
-    }
+// Defines a class named 'Solution' to encapsulate the interval merging logic.
+class Solution { 
+    
+    // Defines a public method named 'merge' that accepts a 2D integer array and returns a 2D integer array.
+    // 'intervals[i]' represents a single interval where intervals[i][0] is the start and intervals[i][1] is the end.
+    public int[][] merge(int[][] intervals) { 
+        
+        // Sorts the 2D array in place using a custom comparator.
+        // 'Arrays.sort' uses a lambda expression (a, b) -> Integer.compare(a[0], b[0]) to sort.
+        // 'a' and 'b' represent two individual 1D arrays (intervals) being compared.
+        // 'a[0]' and 'b[0]' are the starting values of those intervals.
+        // 'Integer.compare' returns a negative value if a[0] < b[0], zero if equal, and positive if a[0] > b[0].
+        // This ensures all intervals are ordered chronologically by their starting times.
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0])); 
+        
+        // Instantiates a dynamic 'ArrayList' that can dynamically grow to hold 1D integer arrays (int[]).
+        // A list is used because we do not know the exact number of merged intervals ahead of time.
+        List<int[]> merged = new ArrayList<>(); 
+        
+        // An enhanced 'for-each' loop that iterates through each 1D integer array ('interval') 
+        // inside the sorted 2D 'intervals' array.
+        for (int[] interval : intervals) { 
+            
+            // Checks two conditions to see if a new interval should be added without merging:
+            // 1. 'merged.isEmpty()' checks if our result list is empty (always true for the first interval).
+            // 2. 'merged.get(merged.size() - 1)[1] < interval[0]' looks at the last added interval in our list.
+            //    It checks if its end time '[1]' is strictly less than the start time 'interval[0]' of the current interval.
+            // If either condition is true, there is no overlap.
+            if (merged.isEmpty() || merged.get(merged.size() - 1)[1] < interval[0]) { 
+                
+                // Appends the current interval directly into the 'merged' list.
+                merged.add(interval); 
+                
+            } else { 
+                // This 'else' block executes if there is an overlap between the last merged interval and the current interval.
+                
+                // 'merged.get(merged.size() - 1)' fetches the last 1D interval array currently inside the list.
+                // '[1]' accesses the end time of that last interval.
+                // 'Math.max(..., interval[1])' compares the end time of the last interval with the end time of the current interval.
+                // It assigns the larger of the two values to the end time of the last interval in the list.
+                // This mutates the array reference inside the list, successfully merging the two overlapping ranges.
+                merged.get(merged.size() - 1)[1] = Math.max(merged.get(merged.size() - 1)[1], interval[1]); 
+            } 
+        } 
+        
+        // Converts the dynamic 'List<int[]>' back into a fixed-size 2D primitive integer array 'int[][]'.
+        // 'merged.size()' provides the exact row count for the new 2D array.
+        // 'new int[merged.size()][]' creates a 2D array structure with the specified number of rows and variable column capacities.
+        // 'toArray()' fills this new 2D array with the elements sorted inside the 'merged' list and returns it.
+        return merged.toArray(new int[merged.size()][]); 
+    } 
 }
+
 ```
 
 ## Quick Revision
