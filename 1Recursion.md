@@ -401,6 +401,7 @@ SC = O(N)
 For most recursion problems:
 
 ```text
+(For tail resursion like find factorial of a number)
 TC = Number of recursive calls × Work done per call
 
 SC = Maximum recursion depth
