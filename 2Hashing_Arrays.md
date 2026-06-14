@@ -2024,7 +2024,8 @@ Keep only unique values at the beginning.
 #### State
 
 ```text
-i = position of last unique element
+- i = position of last unique element
+- j = to find unique element which is not equal to arr[i]
 ```
 
 #### Task
