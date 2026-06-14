@@ -3713,7 +3713,7 @@ At most:
 2 elements
 ```
 
-- can satisfy this condition.(because take n = 100 and divide it in 3 parts each part will be of 33.33units and 1 element appears >33.33 times then only 2 parts can be > 33.33units as they have asked element > N/3 times not equals N/3 times hence in cicle also only 2 parts can exceed 33.33 i.e N/3 times if we divide circle in 3 parts thats why only k - 1 elements can appear N/k times in any array they can be less than (k - 1) hence verify it in second pass.
+- can satisfy this condition.(because take n = 100 and divide it in 3 parts each part will be of 33.33units and 1 element appears == 33.33 times then only 2 parts can be > 33.33units as they have asked element > N/3 times not equals N/3 times hence in cicle also only 2 parts can exceed 33.33 i.e N/3 times if we divide circle in 3 parts thats why only k - 1 elements can appear N/k times in any array they can be less than (k - 1) hence verify it in second pass.
 
 ---
 
