@@ -3254,3 +3254,1473 @@ Need Minimum Answer
 
 ---
 
+# 39. Binary Search on Answer Pattern
+
+---
+
+# Problems
+
+1. Split Array Largest Sum
+2. Painter's Partition Problem
+3. Minimize Max Distance Between Gas Stations
+
+---
+
+# Problem 1: Split Array Largest Sum
+
+## Pattern Recognition
+
+Interview Statement:
+
+> We need to minimize the maximum subarray sum.
+
+This is a classic:
+
+```text
+Binary Search on Answer
+```
+
+---
+
+## Clarify
+
+Ask interviewer:
+
+* Can array contain negatives? (No)
+* Must subarrays remain contiguous? (Yes)
+* Need minimum possible largest sum? (Yes)
+
+---
+
+## Brute Force
+
+Try every possible partition.
+
+```text
+Generate all k partitions
+Find largest sum in each
+Take minimum
+```
+
+Very expensive.
+
+```text
+TC = Exponential
+```
+
+---
+
+## Observation
+
+Minimum answer:
+
+```java
+max(nums)
+```
+
+because one subarray must contain the largest element.
+
+Maximum answer:
+
+```java
+sum(nums)
+```
+
+when entire array is one subarray.
+
+Search Space:
+
+```text
+[max(nums), sum(nums)]
+```
+
+---
+
+## Feasibility Function
+
+Question:
+
+```text
+Can I split array into <= k parts
+such that every part sum <= maxSum ?
+```
+
+---
+
+## Code
+
+```java
+class Solution {
+
+    public boolean possible(int[] nums, int k, int maxSum){
+
+        int cnt = 1;
+        int sum = 0;
+
+        for(int num : nums){
+
+            if(sum + num <= maxSum){
+                sum += num;
+            }
+            else{
+                cnt++;
+                sum = num;
+            }
+        }
+
+        return cnt <= k;
+    }
+
+    public int splitArray(int[] nums, int k) {
+
+        int max = Integer.MIN_VALUE;
+        int sum = 0;
+
+        for(int num : nums){
+            max = Math.max(max,num);
+            sum += num;
+        }
+
+        int low = max;
+        int high = sum;
+
+        while(low <= high){
+
+            int mid = low + (high-low)/2;
+
+            if(possible(nums,k,mid)){
+                high = mid-1;
+            }
+            else{
+                low = mid+1;
+            }
+        }
+
+        return low;
+    }
+}
+```
+
+---
+
+## Dry Run
+
+```text
+nums = [7,2,5,10,8]
+k = 2
+
+Answer Range
+
+[10 , 32]
+
+mid = 21
+
+[7,2,5] =14
++10 =24 ❌
+
+Split
+
+[7,2,5]
+[10,8]
+
+2 partitions
+
+Valid
+
+Move Left
+```
+
+---
+
+## Complexity
+
+```text
+TC = O(N log(sum))
+
+SC = O(1)
+```
+
+---
+
+# Problem 2: Painter Partition
+
+---
+
+## Pattern Recognition
+
+Interview Statement:
+
+> This is identical to Book Allocation and Split Array Largest Sum.
+
+Only wording changes.
+
+```text
+Book -> Board
+Student -> Painter
+Pages -> Length
+```
+
+---
+
+## Clarify
+
+* Contiguous boards?
+* One painter paints one continuous segment?
+* Need minimum completion time?
+
+---
+
+## Search Space
+
+```java
+low = max(board length)
+
+high = total length
+```
+
+---
+
+## Feasibility
+
+Question:
+
+```text
+Can all boards be painted
+using <= painters
+if one painter paints
+at most maxLength units?
+```
+
+---
+
+## Code
+
+```java
+class Solution {
+
+    public boolean possible(int[] boards,
+                            int painters,
+                            long maxLength){
+
+        long sum = 0;
+        int cnt = 1;
+
+        for(int board : boards){
+
+            if(board > maxLength)
+                return false;
+
+            if(sum + board <= maxLength){
+                sum += board;
+            }
+            else{
+                cnt++;
+                sum = board;
+            }
+        }
+
+        return cnt <= painters;
+    }
+
+    public int paint(int A,
+                     int B,
+                     int[] C) {
+
+        long sum = 0;
+        int max = Integer.MIN_VALUE;
+
+        for(int x : C){
+            sum += x;
+            max = Math.max(max,x);
+        }
+
+        long low = max;
+        long high = sum;
+
+        long ans = -1;
+
+        while(low <= high){
+
+            long mid =
+                low + (high-low)/2;
+
+            if(possible(C,A,mid)){
+                ans = mid;
+                high = mid-1;
+            }
+            else{
+                low = mid+1;
+            }
+        }
+
+        long mod = 10000003;
+
+        return (int)
+            ((ans%mod)*(B%mod)%mod);
+    }
+}
+```
+
+---
+
+## Dry Run
+
+```text
+Boards
+
+10 20 30 40
+
+Painters = 2
+
+mid = 60
+
+Painter1
+
+10+20+30 = 60
+
+Painter2
+
+40
+
+Possible
+
+Move Left
+```
+
+---
+
+## Complexity
+
+```text
+TC = O(N log(sum))
+
+SC = O(1)
+```
+
+---
+
+# Problem 3: Minimize Maximum Distance Between Gas Stations
+
+---
+
+# Approach 1 : Brute Force
+
+---
+
+## Idea
+
+Always place next station inside
+
+```text
+Largest Current Interval
+```
+
+---
+
+## Example
+
+```text
+1 -------- 13
+
+length = 12
+
+Place station
+
+1 ---- 7 ---- 13
+
+largest interval becomes 6
+```
+
+---
+
+## Code
+
+(Your brute force solution)
+
+```java
+double[] howMany = new double[n-1];
+
+for(int gasStations=1;
+    gasStations<=k;
+    gasStations++){
+
+    double maxValue=-1;
+    int maxIndex=-1;
+
+    for(int i=0;i<n-1;i++){
+
+        double diff =
+            arr[i+1]-arr[i];
+
+        double secLength =
+            diff/(howMany[i]+1);
+
+        if(secLength>maxValue){
+            maxValue=secLength;
+            maxIndex=i;
+        }
+    }
+
+    howMany[maxIndex]++;
+}
+```
+
+---
+
+## Complexity
+
+```text
+TC = O(K*N)
+
+SC = O(N)
+```
+
+---
+
+# Approach 2 : Max Heap
+
+---
+
+## Pattern Recognition
+
+Interview Statement:
+
+> We repeatedly need the largest interval.
+
+This immediately suggests:
+
+```text
+Priority Queue / Max Heap
+```
+
+---
+
+## Heap Stores
+
+```java
+(secLength , sectionIndex)
+```
+
+Example
+
+```text
+(12,0)
+(6,1)
+(4,2)
+```
+
+Top always:
+
+```text
+Largest Interval
+```
+
+---
+
+## Code
+
+```java
+class Pair{
+
+    double secLength;
+    int secIndex;
+
+    Pair(double secLength,
+         int secIndex){
+
+        this.secLength=secLength;
+        this.secIndex=secIndex;
+    }
+}
+
+PriorityQueue<Pair> pq =
+new PriorityQueue<>(
+(a,b)->Double.compare(
+b.secLength,
+a.secLength
+));
+```
+
+---
+
+## Why Comparator Reversed?
+
+Normal:
+
+```java
+Double.compare(a,b)
+```
+
+creates
+
+```text
+Min Heap
+```
+
+Reversed:
+
+```java
+Double.compare(b,a)
+```
+
+creates
+
+```text
+Max Heap
+```
+
+---
+
+## Complexity
+
+```text
+TC = O(NlogN + KlogN)
+
+SC = O(N)
+```
+
+---
+
+# Approach 3 : Binary Search on Answer
+
+---
+
+## Pattern Recognition
+
+Interview Statement:
+
+> Minimize the maximum distance.
+
+Keywords:
+
+```text
+Minimize
+Maximum
+```
+
+Immediately:
+
+```text
+Binary Search on Answer
+```
+
+---
+
+## Search Space
+
+```java
+low = 0
+
+high = maxGap
+```
+
+---
+
+## Feasibility Question
+
+```text
+If max allowed distance = mid
+
+How many gas stations
+must be inserted?
+```
+
+---
+
+## Helper
+
+```java
+int numInBetween =
+(int)((gap)/dist);
+```
+
+---
+
+### Perfect Division Case
+
+Example
+
+```text
+1 -------- 2
+
+gap = 1
+
+dist = 0.5
+```
+
+Formula gives
+
+```text
+1/0.5 = 2
+```
+
+But only
+
+```text
+1 station
+```
+
+needed.
+
+Therefore:
+
+```java
+if(gap ==
+    numInBetween*dist)
+{
+    numInBetween--;
+}
+```
+
+---
+
+## Binary Search Loop
+
+```java
+while(high-low > 1e-6){
+
+    double mid =
+        low+(high-low)/2;
+
+    int stations =
+        gasStationsPlaced
+        (arr,mid);
+
+    if(stations>k){
+        low=mid;
+    }
+    else{
+        high=mid;
+    }
+}
+```
+
+---
+
+## Why 1e-6?
+
+For doubles:
+
+```java
+while(low<=high)
+```
+
+is dangerous.
+
+Floating points may never become equal.
+
+Hence:
+
+```java
+while(high-low > 1e-6)
+```
+
+---
+
+## Complexity
+
+```text
+TC = O(N log(range))
+
+SC = O(1)
+```
+
+---
+
+# Interview One-Liners
+
+```text
+Split Array
+=
+Book Allocation Clone
+
+Painter Partition
+=
+Book Allocation Clone
+
+Gas Stations
+=
+Heap OR Binary Search Answer
+
+Whenever question says:
+
+Minimize Maximum
+
+or
+
+Maximize Minimum
+
+Think
+
+Binary Search on Answer
+immediately.
+```
+---
+
+# Binary Search on Answer + Partition Pattern
+
+---
+
+# 1. Split Array Largest Sum
+
+## Pattern
+Binary Search on Answer
+
+---
+
+## Interview Flow
+
+### Clarify
+
+- Are all numbers positive?
+- Can k = n?
+- Need minimum possible largest subarray sum?
+
+---
+
+### Brute Force
+
+Try every possible partition.
+
+TC: Exponential
+
+Not feasible.
+
+---
+
+### Observation
+
+Answer lies between:
+
+```text
+max(nums) <= answer <= sum(nums)
+```
+
+Why?
+
+- Every subarray contains at least one element.
+- Largest sum can never be less than maximum element.
+- If no split is done, answer becomes total array sum.
+
+---
+
+### Plan
+
+For a candidate answer `mid`:
+
+Can we split array into at most `k` subarrays
+such that each subarray sum ≤ `mid`?
+
+If YES:
+- Try smaller answer
+
+If NO:
+- Increase answer
+
+---
+
+## Code
+
+```java
+class Solution {
+
+    public boolean possible(int[] nums, int k, int maxSum){
+
+        int cnt = 1;
+        int sum = 0;
+
+        for(int num : nums){
+
+            if(sum + num <= maxSum){
+                sum += num;
+            }
+            else{
+                cnt++;
+                sum = num;
+            }
+        }
+
+        return cnt <= k;
+    }
+
+    public int splitArray(int[] nums, int k) {
+
+        int max = Integer.MIN_VALUE;
+        int sum = 0;
+
+        for(int num : nums){
+            max = Math.max(max,num);
+            sum += num;
+        }
+
+        int low = max;
+        int high = sum;
+
+        while(low <= high){
+
+            int mid = low + (high-low)/2;
+
+            if(possible(nums,k,mid)){
+                high = mid - 1;
+            }
+            else{
+                low = mid + 1;
+            }
+        }
+
+        return low;
+    }
+}
+```
+
+### TC
+
+```text
+O(n log(sum))
+```
+
+### SC
+
+```text
+O(1)
+```
+
+---
+
+# 2. Painter's Partition Problem
+
+## Pattern
+
+Binary Search on Answer
+
+---
+
+## Observation
+
+Boards represent work.
+
+Each painter paints contiguous boards.
+
+Need minimum time.
+
+---
+
+## Search Space
+
+```text
+max(board length)
+to
+sum(board lengths)
+```
+
+---
+
+## Code
+
+```java
+class Solution {
+
+    public boolean possible(int[] boards,
+                            int painters,
+                            long maxLength){
+
+        int cnt = 1;
+        long sum = 0;
+
+        for(int board : boards){
+
+            if(board > maxLength)
+                return false;
+
+            if(sum + board <= maxLength){
+                sum += board;
+            }
+            else{
+                cnt++;
+                sum = board;
+            }
+        }
+
+        return cnt <= painters;
+    }
+
+    public int paint(int A,int B,int[] C){
+
+        int max = Integer.MIN_VALUE;
+        long sum = 0;
+
+        for(int board : C){
+            max = Math.max(max,board);
+            sum += board;
+        }
+
+        long low = max;
+        long high = sum;
+        long ans = -1;
+
+        while(low <= high){
+
+            long mid = low + (high-low)/2;
+
+            if(possible(C,A,mid)){
+                ans = mid;
+                high = mid - 1;
+            }
+            else{
+                low = mid + 1;
+            }
+        }
+
+        long mod = 10000003;
+
+        return (int)((ans % mod)*(B % mod)%mod);
+    }
+}
+```
+
+### TC
+
+```text
+O(n log(sum))
+```
+
+### SC
+
+```text
+O(1)
+```
+
+---
+
+# 3. Minimize Max Distance Between Gas Stations
+
+---
+
+## Pattern
+
+### Approach 1
+Greedy
+
+### Approach 2
+Heap
+
+### Approach 3
+Binary Search on Answer (Best)
+
+---
+
+# Approach 1 : Brute Force
+
+## Idea
+
+Always place gas station inside the largest section.
+
+---
+
+### TC
+
+```text
+O(k*n)
+```
+
+### SC
+
+```text
+O(n)
+```
+
+---
+
+# Approach 2 : Priority Queue
+
+## Pattern
+
+Top K Repeated Selection
+
+---
+
+### Idea
+
+Store
+
+```text
+(sectionLength, sectionIndex)
+```
+
+inside max heap.
+
+Always split the largest section.
+
+---
+
+## Code
+
+```java
+class Pair{
+
+    double secLength;
+    int secIndex;
+
+    Pair(double secLength,int secIndex){
+        this.secLength = secLength;
+        this.secIndex = secIndex;
+    }
+}
+
+class Solution {
+
+    public double minimiseMaxDistance(int[] arr,int k){
+
+        int n = arr.length;
+
+        int[] howMany = new int[n-1];
+
+        PriorityQueue<Pair> pq =
+            new PriorityQueue<>(
+                (a,b) ->
+                Double.compare(
+                    b.secLength,
+                    a.secLength));
+
+        for(int i=0;i<n-1;i++){
+
+            pq.offer(
+                new Pair(
+                    arr[i+1]-arr[i],
+                    i));
+        }
+
+        for(int gas=1;gas<=k;gas++){
+
+            Pair top = pq.poll();
+
+            int idx = top.secIndex;
+
+            howMany[idx]++;
+
+            double diff =
+                arr[idx+1]-arr[idx];
+
+            double newLen =
+                diff/(howMany[idx]+1);
+
+            pq.offer(
+                new Pair(newLen,idx));
+        }
+
+        return pq.peek().secLength;
+    }
+}
+```
+
+### TC
+
+```text
+O(n log n + k log n)
+```
+
+### SC
+
+```text
+O(n)
+```
+
+---
+
+# Approach 3 : Binary Search on Answer
+
+## Observation
+
+Suppose answer = 4
+
+Question becomes:
+
+```text
+Can every section be made <= 4
+using at most k stations?
+```
+
+YES/NO problem.
+
+Hence Binary Search on Answer.
+
+---
+
+## Search Space
+
+```text
+0
+to
+maximum existing gap
+```
+
+---
+
+## Code
+
+```java
+class Solution {
+
+    int stationsNeeded(int[] arr,double dist){
+
+        int cnt = 0;
+
+        for(int i=0;i<arr.length-1;i++){
+
+            int num =
+                (int)((arr[i+1]-arr[i])/dist);
+
+            if((arr[i+1]-arr[i])
+                == num*dist){
+
+                num--;
+            }
+
+            cnt += num;
+        }
+
+        return cnt;
+    }
+
+    public double minimiseMaxDistance(
+            int[] arr,int k){
+
+        double low = 0;
+        double high = 0;
+
+        for(int i=0;i<arr.length-1;i++){
+
+            high = Math.max(
+                high,
+                arr[i+1]-arr[i]);
+        }
+
+        while(high-low > 1e-6){
+
+            double mid =
+                low+(high-low)/2;
+
+            if(stationsNeeded(arr,mid)>k){
+
+                low = mid;
+            }
+            else{
+
+                high = mid;
+            }
+        }
+
+        return high;
+    }
+}
+```
+
+### TC
+
+```text
+O(n log(range × 10^6))
+```
+
+### SC
+
+```text
+O(1)
+```
+
+---
+
+# 4. Median of Two Sorted Arrays
+
+## Pattern
+
+Partition Binary Search
+
+---
+
+## Recognition
+
+Keywords:
+
+- Two Sorted Arrays
+- Median
+- O(log(min(n,m)))
+
+Immediately think:
+
+```text
+Partition Binary Search
+```
+
+---
+
+## Valid Partition
+
+```text
+l1 <= r2
+
+AND
+
+l2 <= r1
+```
+
+---
+
+## Code
+
+```java
+class Solution {
+
+    public double findMedianSortedArrays(
+            int[] nums1,
+            int[] nums2){
+
+        if(nums1.length > nums2.length)
+            return findMedianSortedArrays(
+                    nums2,nums1);
+
+        int n1 = nums1.length;
+        int n2 = nums2.length;
+
+        int low = 0;
+        int high = n1;
+
+        int left =
+            (n1+n2+1)/2;
+
+        while(low<=high){
+
+            int cut1 =
+                low+(high-low)/2;
+
+            int cut2 =
+                left-cut1;
+
+            int l1 =
+                cut1==0 ?
+                Integer.MIN_VALUE :
+                nums1[cut1-1];
+
+            int l2 =
+                cut2==0 ?
+                Integer.MIN_VALUE :
+                nums2[cut2-1];
+
+            int r1 =
+                cut1==n1 ?
+                Integer.MAX_VALUE :
+                nums1[cut1];
+
+            int r2 =
+                cut2==n2 ?
+                Integer.MAX_VALUE :
+                nums2[cut2];
+
+            if(l1<=r2 && l2<=r1){
+
+                if((n1+n2)%2==1)
+                    return Math.max(l1,l2);
+
+                return
+                (Math.max(l1,l2)
+                +Math.min(r1,r2))/2.0;
+            }
+
+            else if(l1>r2){
+                high=cut1-1;
+            }
+            else{
+                low=cut1+1;
+            }
+        }
+
+        return 0;
+    }
+}
+```
+
+### TC
+
+```text
+O(log(min(n1,n2)))
+```
+
+### SC
+
+```text
+O(1)
+```
+
+---
+
+# 5. Kth Element of Two Sorted Arrays
+
+## Pattern
+
+Partition Binary Search
+
+---
+
+## Key Idea
+
+Median:
+
+```text
+Left Side Size = Total/2
+```
+
+Kth Element:
+
+```text
+Left Side Size = k
+```
+
+Everything else remains same.
+
+---
+
+## Code
+
+```java
+class Solution {
+
+    public int kthElement(
+            int[] a,
+            int[] b,
+            int k){
+
+        int n1 = a.length;
+        int n2 = b.length;
+
+        if(n1 > n2)
+            return kthElement(b,a,k);
+
+        int low =
+            Math.max(0,k-n2);
+
+        int high =
+            Math.min(k,n1);
+
+        while(low<=high){
+
+            int cut1 =
+                low+(high-low)/2;
+
+            int cut2 =
+                k-cut1;
+
+            int l1 =
+                cut1==0 ?
+                Integer.MIN_VALUE :
+                a[cut1-1];
+
+            int l2 =
+                cut2==0 ?
+                Integer.MIN_VALUE :
+                b[cut2-1];
+
+            int r1 =
+                cut1==n1 ?
+                Integer.MAX_VALUE :
+                a[cut1];
+
+            int r2 =
+                cut2==n2 ?
+                Integer.MAX_VALUE :
+                b[cut2];
+
+            if(l1<=r2 && l2<=r1){
+                return Math.max(l1,l2);
+            }
+
+            else if(l1>r2){
+                high=cut1-1;
+            }
+            else{
+                low=cut1+1;
+            }
+        }
+
+        return 0;
+    }
+}
+```
+
+### TC
+
+```text
+O(log(min(n1,n2)))
+```
+
+### SC
+
+```text
+O(1)
+```
+
+---
+
+# Google Interview Revision Sheet
+
+## Binary Search on Answer
+
+```text
+Split Array Largest Sum
+Painter Partition
+Book Allocation
+Aggressive Cows
+Koko Eating Bananas
+Bouquets
+Smallest Divisor
+Ship Packages
+Gas Station Distance
+```
+
+---
+
+## Partition Binary Search
+
+```text
+Median of Two Sorted Arrays
+Kth Element of Two Sorted Arrays
+```
+
+---
+
+## Heap Pattern
+
+```text
+Minimize Max Distance Between Gas Stations
+Merge K Sorted Lists
+Top K Elements
+K Closest Elements
+```
+
+---
+
+## Recognition Keywords
+
+```text
+Minimize Maximum
+Maximize Minimum
+Smallest Possible
+Largest Possible
+
+=> Binary Search on Answer
+```
+
+```text
+Two Sorted Arrays
+Median
+Kth Element
+
+=> Partition Binary Search
+```
+
+```text
+Repeated Largest / Smallest Selection
+
+=> Heap
+```
+
+---
+
