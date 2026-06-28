@@ -1,4427 +1,713 @@
-# 32. Binary Search Variant: Bounds Pattern
+# Binary Search Patterns - Striver A2Z DSA Sheet
 
-## Problems
-
-- Lower Bound
-- Upper Bound
-- Search Insert Position
-- Floor and Ceil in Sorted Array
-- First and Last Occurrence
-
-## Core Idea
-
-Instead of searching for an exact element, search for the boundary where a condition becomes true.
-
-## Interview Explanation
-
-### State
-
-```text
-low
-high
-mid
-answer
-```
-
-### Task
-
-Find a position satisfying a condition.
-
-### Observation
-
-Classic Binary Search:
-
-```text
-Find target
-```
-
-Bounds Binary Search:
-
-```text
-Find first position
-or
-Find last position
-```
-
-Think:
-
-```text
-Boundary Search
-```
-
-rather than
-
-```text
-Exact Search
-```
-
-## Recognition Clues
-
-```text
-First occurrence
-Last occurrence
-Lower bound
-Upper bound
-Insert position
-Floor
-Ceil
-Sorted array
-```
-
-## TC / SC
-
-| Time | Space |
-|--------|--------|
-| O(log N) | O(1) |
+> A quick revision guide for recognizing Binary Search patterns.
+> **Golden Rule:** Before writing code, identify **what you're binary searching on**:
+>
+> * Value?
+> * Boundary?
+> * Property?
+> * Answer?
+> * Partition?
+> * Matrix?
 
 ---
 
-# Lower Bound Pattern
+# 1. Classic Binary Search (Exact Search)
 
-## Problems
+## 💡 Idea
 
-- Lower Bound
-- Search Insert Position
+Search for an exact value in a sorted array.
 
-## Core Idea
+### Problems
 
-Find the first index where:
+* Search X in Sorted Array
 
-```text
-arr[i] >= target
-```
+### General Approach
 
-## Interview Explanation
+* Maintain `low` and `high`.
+* Compute `mid`.
+* Compare `arr[mid]` with target.
+* Search left/right accordingly.
 
-### State
-
-```text
-answer = n
-```
-
-### Observation
-
-If:
-
-```text
-arr[mid] >= target
-```
-
-mid can be answer.
-
-But there may be a smaller valid index.
-
-Move left.
-
-## Recognition Clues
-
-```text
-First >= target
-Insert position
-Lower bound
-```
-
-## TC / SC
-
-| Time | Space |
-|--------|--------|
-| O(log N) | O(1) |
-
-## Java Code
+### Template
 
 ```java
-public static int lowerBound(int[] arr, int target){
+while(low <= high){
+    int mid = low + (high-low)/2;
 
-    int n = arr.length;
-
-    int low = 0;
-    int high = n - 1;
-
-    int ans = n;
-
-    while(low <= high){
-
-        int mid = low + (high - low) / 2;
-
-        if(arr[mid] >= target){
-
-            ans = mid;
-            high = mid - 1;
-        }
-        else{
-            low = mid + 1;
-        }
-    }
-
-    return ans;
+    if(arr[mid] == target)
+        return mid;
+    else if(arr[mid] < target)
+        low = mid + 1;
+    else
+        high = mid - 1;
 }
+return -1;
 ```
 
-## Quick Revision
-
-```text
-First >= target
-
-Valid answer found
-
-Move left
-```
+**Time:** `O(log n)`
 
 ---
 
-# Upper Bound Pattern
+# 2. Boundary Search (Lower Bound / Upper Bound)
 
-## Problems
+## 💡 Idea
 
-- Upper Bound
+Instead of finding an element, find the **first/last valid position**.
 
-## Core Idea
+### Problems
 
-Find first index where:
+* Lower Bound
+* Upper Bound
+* Search Insert Position
+* Floor & Ceil
+* First and Last Occurrence
+* Count Occurrences
 
-```text
-arr[i] > target
-```
+### General Approach
 
-## Interview Explanation
+Maintain an answer variable.
 
-### State
+Whenever current index satisfies the condition
 
-```text
-answer = n
-```
+* store answer
+* continue searching toward boundary
 
-### Observation
+### Conditions
 
-If:
-
-```text
-arr[mid] > target
-```
-
-mid may be answer.
-
-Move left to find smaller valid index.
-
-## Recognition Clues
-
-```text
-First > target
-Upper bound
-```
-
-## TC / SC
-
-| Time | Space |
-|--------|--------|
-| O(log N) | O(1) |
-
-## Java Code
-
-```java
-public static int upperBound(int[] arr, int target){
-
-    int n = arr.length;
-
-    int low = 0;
-    int high = n - 1;
-
-    int ans = n;
-
-    while(low <= high){
-
-        int mid = low + (high - low) / 2;
-
-        if(arr[mid] > target){
-
-            ans = mid;
-            high = mid - 1;
-        }
-        else{
-            low = mid + 1;
-        }
-    }
-
-    return ans;
-}
-```
-
-## Quick Revision
-
-```text
-First > target
-
-Valid answer
-
-Move left
-```
+| Problem          | Condition                |
+| ---------------- | ------------------------ |
+| Lower Bound      | first `>= x`             |
+| Upper Bound      | first `> x`              |
+| Floor            | largest `<= x`           |
+| Ceil             | smallest `>= x`          |
+| First Occurrence | move left after finding  |
+| Last Occurrence  | move right after finding |
 
 ---
 
-# Search Insert Position Pattern
+# 3. Binary Search on Rotated Array
 
-## Problems
+## 💡 Idea
 
-- Search Insert Position
+At least one half is always sorted.
 
-## Core Idea
+### Problems
 
-Search Insert Position is exactly Lower Bound.
+* Search in Rotated Sorted Array-I
+* Search in Rotated Sorted Array-II
+* Find Minimum
+* Rotation Count
 
-## Interview Explanation
+### General Approach
 
-### Observation
+Every iteration
 
-Position where element should be inserted:
+1. Determine which half is sorted.
+2. Check if target belongs there.
+3. Otherwise search the other half.
 
-```text
-First position
->= target
-```
-
-which is:
-
-```text
-Lower Bound
-```
-
-## Recognition Clues
-
-```text
-Insert position
-Sorted array
-Maintain order
-```
-
-## TC / SC
-
-| Time | Space |
-|--------|--------|
-| O(log N) | O(1) |
-
-## Java Code
-
-```java
-class Solution {
-
-    public int searchInsert(
-            int[] nums,
-            int target) {
-
-        int low = 0;
-        int high = nums.length - 1;
-
-        int ans = nums.length;
-
-        while(low <= high){
-
-            int mid =
-                low + (high - low) / 2;
-
-            if(nums[mid] >= target){
-
-                ans = mid;
-                high = mid - 1;
-            }
-            else{
-                low = mid + 1;
-            }
-        }
-
-        return ans;
-    }
-}
-```
-
-## Quick Revision
-
-```text
-Search Insert Position
-
-=
-
-Lower Bound
-```
-
----
-
-# Floor and Ceil Pattern
-
-## Problems
-
-- Floor and Ceil in Sorted Array
-
-## Core Idea
-
-Floor:
-
-```text
-Largest value <= target
-```
-
-Ceil:
-
-```text
-Smallest value >= target
-```
-
-## Interview Explanation
-
-### State
-
-```text
-floor = -1
-ceil = -1
-```
-
-### Observation
-
-For Floor:
-
-```text
-arr[mid] <= target
-
-possible answer
-
-move right
-```
-
-For Ceil:
-
-```text
-arr[mid] >= target
-
-possible answer
-
-move left
-```
-
-## Recognition Clues
-
-```text
-Nearest smaller
-Nearest greater
-Floor
-Ceil
-Sorted array
-```
-
-## TC / SC
-
-| Time | Space |
-|--------|--------|
-| O(log N) | O(1) |
-
-## Java Code
-
-### Floor
-
-```java
-public static int floor(int[] arr, int target){
-
-    int low = 0;
-    int high = arr.length - 1;
-
-    int ans = -1;
-
-    while(low <= high){
-
-        int mid =
-            low + (high - low) / 2;
-
-        if(arr[mid] <= target){
-
-            ans = arr[mid];
-            low = mid + 1;
-        }
-        else{
-            high = mid - 1;
-        }
-    }
-
-    return ans;
-}
-```
-
-### Ceil
-
-```java
-public static int ceil(int[] arr, int target){
-
-    int low = 0;
-    int high = arr.length - 1;
-
-    int ans = -1;
-
-    while(low <= high){
-
-        int mid =
-            low + (high - low) / 2;
-
-        if(arr[mid] >= target){
-
-            ans = arr[mid];
-            high = mid - 1;
-        }
-        else{
-            low = mid + 1;
-        }
-    }
-
-    return ans;
-}
-```
-
-## Quick Revision
-
-```text
-Floor
-
-<= target
-Move Right
-
-Ceil
-
->= target
-Move Left
-```
-
----
-
-# First and Last Occurrence Pattern
-
-## Problems
-
-- First Occurrence
-- Last Occurrence
-- Search Range
-
-## Core Idea
-
-Find left boundary and right boundary separately.
-
-## Interview Explanation
-
-### State
-
-```text
-answer
-```
-
-### Observation
-
-First Occurrence:
-
-```text
-nums[mid] == target
-
-Store answer
-
-Move Left
-```
-
-Last Occurrence:
-
-```text
-nums[mid] == target
-
-Store answer
-
-Move Right
-```
-
-## Recognition Clues
-
-```text
 Duplicates
-First occurrence
-Last occurrence
-Search range
-Occurrences
-```
 
-## TC / SC
-
-| Time | Space |
-|--------|--------|
-| O(log N) | O(1) |
-
-## Java Code
-
-### First Occurrence
-
-```java
-public static int firstOccurrence(
-        int[] nums,
-        int target){
-
-    int low = 0;
-    int high = nums.length - 1;
-
-    int ans = -1;
-
-    while(low <= high){
-
-        int mid =
-            low + (high - low) / 2;
-
-        if(nums[mid] == target){
-
-            ans = mid;
-            high = mid - 1;
-        }
-        else if(nums[mid] < target){
-            low = mid + 1;
-        }
-        else{
-            high = mid - 1;
-        }
-    }
-
-    return ans;
-}
-```
-
-### Last Occurrence
-
-```java
-public static int lastOccurrence(
-        int[] nums,
-        int target){
-
-    int low = 0;
-    int high = nums.length - 1;
-
-    int ans = -1;
-
-    while(low <= high){
-
-        int mid =
-            low + (high - low) / 2;
-
-        if(nums[mid] == target){
-
-            ans = mid;
-            low = mid + 1;
-        }
-        else if(nums[mid] < target){
-            low = mid + 1;
-        }
-        else{
-            high = mid - 1;
-        }
-    }
-
-    return ans;
-}
-```
-
-### Search Range
-
-```java
-class Solution {
-
-    public int[] searchRange(
-            int[] nums,
-            int target) {
-
-        int first =
-            firstOccurrence(nums, target);
-
-        int last =
-            lastOccurrence(nums, target);
-
-        return new int[]{first, last};
-    }
-}
-```
-
-## Quick Revision
-
-```text
-First Occurrence
-
-Found target
-Move Left
-
-Last Occurrence
-
-Found target
-Move Right
-
-Search Range
-
-[first,last]
-```
+Skip equal elements when necessary.
 
 ---
 
-# Interview Master Shortcut
+# 4. Binary Search on Property
 
-## Lower Bound
+## 💡 Idea
 
-```text
-First >= target
-```
+Search for a property instead of an element.
 
-## Upper Bound
+### Problems
 
-```text
-First > target
-```
+* Single Element
+* Peak Element
 
-## Search Insert Position
+### General Approach
 
-```text
-Lower Bound
-```
+Examples
 
-## Floor
+### Single Element
 
-```text
-Largest <= target
-```
-
-## Ceil
-
-```text
-Smallest >= target
-```
-
-## First Occurrence
-
-```text
-Found target
-
-Move Left
-```
-
-## Last Occurrence
-
-```text
-Found target
-
-Move Right
-```
-
-## One-Line Recognition
-
-```text
-Sorted Array +
-First/Last/Nearest/Insert
-
-=> Binary Search on Boundaries
-```
-
----
-
-# Pattern 34: Rotated Sorted Array + Bounds Binary Search
-
----
-
-# Problem 1: Count Occurrences in a Sorted Array
-
-## Pattern
-
-Bounds Binary Search
-
-## Core Idea
-
-Find:
-
-* First Occurrence of target
-* Last Occurrence of target
-
-Count:
-
-```text
-Last - First + 1
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Array is sorted.
-Duplicates may exist.
-```
-
-### Task
-
-```text
-Count total occurrences of target.
-```
-
-### Observation
-
-```text
-If we know:
-
-First Occurrence = f
-Last Occurrence = l
-
-Then
-
-Count = l - f + 1
-```
-
----
-
-## Recognition Clues
-
-Use when:
-
-```text
-Sorted Array
-Count Frequency
-Find First Occurrence
-Find Last Occurrence
-Duplicates Present
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-    public int countOccurrences(int[] arr, int target) {
-        int n = arr.length;
-        int s = 0;
-        int e = n - 1;
-        int first = -1;
-
-        while(s <= e){
-             int m = s + (e - s) / 2;
-
-             if(arr[m] == target){
-                first = m;
-                e = m - 1;
-             }
-             else if(arr[m] > target){
-                e = m - 1;
-             }
-             else{
-                s = m + 1;
-             }
-        }
-
-        int s1 = 0;
-        int e1 = n - 1;
-        int last = -1;
-
-        while(s1 <= e1){
-            int m1 = s1 + (e1 - s1) / 2;
-
-            if(arr[m1] == target){
-                last = m1;
-                s1 = m1 + 1;
-            }
-            else if(arr[m1] > target){
-                 e1 = m1 - 1;
-            }
-            else{
-                s1 = m1 + 1;
-            }
-        }
-
-        if(first == -1){
-            return -1;
-        }
-
-        return last - first + 1;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-FIRST OCCURRENCE
-Found -> Move Left
-
-LAST OCCURRENCE
-Found -> Move Right
-
-Answer
-= Last - First + 1
-```
-
----
-
-# Problem 2: Search in Rotated Sorted Array I
-
-## Pattern
-
-Pivot + Binary Search
-
----
-
-## Core Idea
-
-```text
-Find Pivot
-
-Array becomes
-
-[Sorted Part 1]
-[Sorted Part 2]
-
-Binary Search on proper half
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Sorted array rotated once.
-No duplicates.
-```
-
-### Task
-
-```text
-Find target index.
-```
-
-### Observation
-
-```text
-After pivot detection:
-
-0 → Pivot
-Pivot+1 → N-1
-
-Both halves are sorted.
-```
-
----
-
-## Recognition Clues
-
-```text
-Rotated Sorted Array
-Unique Elements
-Search Target
-O(logN)
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-    public int search(int[] nums, int target) {
-
-       int n = nums.length;
-       int s = 0;
-       int e = n - 1;
-       int pivot = -1;
-
-       while(s <= e){
-
-        int m = s + (e - s) / 2;
-
-        if(m < n - 1 && nums[m] > nums[m + 1]){
-            pivot = m;
-            break;
-        }
-        else if(nums[m] >= nums[s]){
-            s = m + 1;
-        }
-        else{
-            e = m - 1;
-        }
-       }
-
-       if(pivot == -1){
-        return bs(nums, 0, n - 1, target);
-       }
-
-       int ans = bs(nums, 0, pivot, target);
-
-       if(ans == -1){
-        return bs(nums, pivot + 1, n - 1, target);
-       }
-
-       return ans;
-    }
-
-    public int bs(int[] nums, int s, int e, int target){
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(nums[m] == target){
-                return m;
-            }
-            else if(nums[m] > target){
-                e = m - 1;
-            }
-            else{
-                s = m + 1;
-            }
-        }
-
-        return -1;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-STEP 1
-Find Pivot
-
-STEP 2
-Binary Search Left Half
-
-STEP 3
-Binary Search Right Half
-```
-
----
-
-# Problem 3: Search in Rotated Sorted Array II
-
-## Pattern
-
-Pivot Binary Search + Duplicate Handling
-
----
-
-## Core Idea
-
-```text
-Duplicates destroy sorted-half detection.
-
-When:
-
-arr[s] == arr[mid] == arr[e]
-
-Shrink both sides.
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Rotated Sorted Array
-Duplicates Present
-```
-
-### Task
-
-```text
-Return true if target exists.
-```
-
-### Observation
-
-```text
-Duplicates create ambiguity.
-
-Remove ambiguity
-by shrinking boundaries.
-```
-
----
-
-## Recognition Clues
-
-```text
-Rotated Array
-Duplicates
-Search Element
-```
-
----
-
-## TC / SC
-
-```text
-Worst TC = O(N)
-
-Average TC = O(logN)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public boolean search(int[] nums, int target) {
-
-        int n = nums.length;
-        int s = 0;
-        int e = n - 1;
-        int pivot = -1;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(nums[s] == nums[m] && nums[m] == nums[e]){
-
-                if(s < n - 1 && nums[s] > nums[s + 1]){
-                    pivot = s;
-                    break;
-                }
-
-                s++;
-
-                if(e > 0 && nums[e] < nums[e - 1]){
-                    pivot = e - 1;
-                    break;
-                }
-
-                e--;
-            }
-
-            else if(m < n - 1 && nums[m] > nums[m + 1]){
-                pivot = m;
-                break;
-            }
-
-            else if(nums[m] >= nums[s]){
-                  s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-        }
-
-        if(pivot == -1)
-            return bs(nums, 0, n - 1, target);
-
-        boolean ans = bs(nums, 0, pivot, target);
-
-        if(!ans){
-            return bs(nums, pivot + 1, n - 1, target);
-        }
-
-        return ans;
-    }
-
-    public boolean bs(int[] nums, int s, int e, int target){
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(nums[m] == target){
-                return true;
-            }
-            else if(nums[m] < target){
-                s = m + 1;
-            }
-            else{
-                e = m - 1;
-            }
-        }
-
-        return false;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-Duplicates?
-
-YES
-
-arr[s] == arr[mid] == arr[e]
-
-=> s++
-=> e--
-```
-
----
-
-# Problem 4: Find Minimum in Rotated Sorted Array
-
-## Pattern
-
-Pivot Detection
-
----
-
-## Core Idea
-
-```text
-Pivot = largest element
-
-Minimum = Pivot + 1
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Sorted Array Rotated
-```
-
-### Task
-
-```text
-Find minimum element.
-```
-
-### Observation
-
-```text
-Pivot divides array.
-
-Minimum lies right after pivot.
-```
-
----
-
-## Recognition Clues
-
-```text
-Rotated Array
-Minimum Element
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-
-Duplicates Case
-Worst O(N)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int findMin(int[] nums) {
-
-        int n = nums.length;
-        int s = 0;
-        int e = n - 1;
-        int pivot = -1;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(nums[s] == nums[m] && nums[m] == nums[e]){
-
-                if(s < n - 1 && nums[s] > nums[s + 1]){
-                    pivot = s;
-                    break;
-                }
-
-                s++;
-
-                if(e > 0 && nums[e] < nums[e - 1]){
-                    pivot = e - 1;
-                    break;
-                }
-
-                e--;
-            }
-
-            else if(m < n - 1 && nums[m] > nums[m + 1]){
-                pivot = m;
-                break;
-            }
-
-            else if(nums[m] >= nums[s]){
-                s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-        }
-
-        if(pivot == -1){
-            return nums[0];
-        }
-
-        return nums[pivot + 1];
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-Pivot Found?
-
-YES
-Answer = pivot + 1
-
-NO
-Answer = nums[0]
-```
-
----
-
-# Problem 5: Find Out How Many Times Array Is Rotated
-
-## Pattern
-
-Pivot Detection
-
----
-
-## Core Idea
-
-```text
-Rotation Count
-
-= Index of Minimum
-
-= Pivot + 1
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Sorted Array Rotated
-```
-
-### Task
-
-```text
-Find number of rotations.
-```
-
-### Observation
-
-```text
-Minimum element
-appears at rotation count index.
-```
-
----
-
-## Recognition Clues
-
-```text
-Rotation Count
-Rotated Array
-Find Minimum Index
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-
-Worst = O(N)
-(duplicates)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int findKRotation(ArrayList<Integer> nums) {
-
-       int n = nums.size();
-       int s = 0;
-       int e = n - 1;
-       int pivot = -1;
-
-       while(s <= e){
-
-        int m = s + (e - s) / 2;
-
-        if(nums.get(s) == nums.get(m) &&
-           nums.get(m) == nums.get(e)){
-
-            if(s < n - 1 &&
-               nums.get(s) > nums.get(s + 1)){
-                pivot = s;
-                break;
-            }
-
-            s++;
-
-            if(e > 0 &&
-               nums.get(e) < nums.get(e - 1)){
-                pivot = e - 1;
-                break;
-            }
-
-            e--;
-        }
-
-        else if(m < n - 1 &&
-                nums.get(m) > nums.get(m + 1)){
-            pivot = m;
-            break;
-        }
-
-        else if(nums.get(m) >= nums.get(s)){
-            s = m + 1;
-        }
-
-        else{
-            e = m - 1;
-        }
-       }
-
-       return pivot + 1;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-Rotation Count
-=
-Minimum Index
-=
-Pivot + 1
-
-Example
-
-4 5 6 7 1 2 3
-
-Pivot = 3
-
-Rotations = 4
-```
-
----
-
-# Pattern Summary
-
-```text
-COUNT OCCURRENCES
-→ First + Last Occurrence
-
-SEARCH ROTATED ARRAY
-→ Pivot + Binary Search
-
-ROTATED ARRAY II
-→ Handle Duplicates
-
-FIND MINIMUM
-→ Pivot + 1
-
-ROTATION COUNT
-→ Pivot + 1
-```
-
-# Pattern 35: Binary Search on Index Properties + Binary Search on Answers (Part 2)
-
----
-
-# Problem 6: Single Element in a Sorted Array
-
-## Pattern
-
-Binary Search on Index Properties
-
----
-
-## Core Idea
-
-Every element appears twice except one.
-
-Observe pair formation:
-
-```text
-Before Single Element
-
-Index: 0 1 2 3 4 5
-Value: 1 1 2 2 3 3
-
-Pairs start at EVEN index
-```
-
-```text
-After Single Element
-
-Index: 0 1 2 3 4 5 6
-
-Value: 1 1 2 3 3 4 4
-
-Pairs start at ODD index
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Sorted Array
-Every element appears twice
-One element appears once
-```
-
-### Task
-
-```text
-Find unique element
-```
-
-### Observation
-
-```text
 Before answer
 
-Even index matches next index
+```
+Pairs start at even index
+```
 
 After answer
 
-Odd index matches previous index
 ```
-
----
-
-## Recognition Clues
-
-```text
-Sorted Array
-Pairs
-Only One Unique Element
-O(logN) Required
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int singleNonDuplicate(int[] nums) {
-
-        int n = nums.length;
-
-        if(n == 1) return nums[0];
-
-        if(nums[0] != nums[1]) return nums[0];
-
-        if(nums[n - 1] != nums[n - 2]) return nums[n - 1];
-
-        int s = 0;
-        int e = n - 1;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(m > 0 &&
-               m < n - 1 &&
-               nums[m] != nums[m - 1] &&
-               nums[m] != nums[m + 1]){
-                return nums[m];
-            }
-
-            else if(
-                (m % 2 == 0 &&
-                 m < n - 1 &&
-                 nums[m] == nums[m + 1])
-
-                 ||
-
-                (m % 2 == 1 &&
-                 m > 0 &&
-                 nums[m] == nums[m - 1])
-            ){
-                 s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-        }
-
-        return -1;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-EVEN INDEX
-
-Should match NEXT
-
-ODD INDEX
-
-Should match PREVIOUS
-
-Condition breaks?
-
-Unique element side found
-```
-
----
-
-# Problem 7: Find Peak Element
-
-## Pattern
-
-Binary Search on Slope
-
----
-
-## Core Idea
-
-```text
-If mid < mid+1
-
-You are on increasing slope
-
-Move Right
-
-----------------
-
-If mid > mid+1
-
-Peak exists on left side
-
-Move Left
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Peak element > both neighbours
-```
-
-### Task
-
-```text
-Find any peak
-```
-
-### Observation
-
-```text
-Increasing slope
-
-→ peak ahead
-
-Decreasing slope
-
-→ peak behind
-```
-
----
-
-## Recognition Clues
-
-```text
-Peak
-Mountain
-Local Maximum
-O(logN)
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int findPeakElement(int[] nums) {
-
-        int n = nums.length;
-
-        if(n == 1) return 0;
-
-        if(nums[0] > nums[1]) return 0;
-
-        if(nums[n - 1] > nums[n - 2]) return n - 1;
-
-        int s = 0;
-        int e = n - 1;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(m > 0 &&
-               m < n - 1 &&
-               nums[m] > nums[m - 1] &&
-               nums[m] > nums[m + 1]){
-
-                return m;
-            }
-
-            else if(m < n - 1 &&
-                    nums[m] < nums[m + 1]){
-
-                 s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-        }
-
-        return -1;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid < mid+1
-
-Move Right
-
-mid > mid+1
-
-Move Left
-
-Think SLOPE
-```
-
----
-
-# Problem 8: Find Square Root of a Number
-
-## Pattern
-
-Binary Search on Answers
-
----
-
-## Core Idea
-
-Search space:
-
-```text
-1 → n
-```
-
-Find:
-
-```text
-Largest value
-
-x*x <= n
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Answer lies between 1 and n
-```
-
-### Task
-
-```text
-Find floor(sqrt(n))
-```
-
-### Observation
-
-```text
-mid² <= n
-
-Possible Answer
-
-Store Answer
-Move Right
-```
-
----
-
-## Recognition Clues
-
-```text
-Square Root
-Floor Value
-Answer Space
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int floorSqrt(int n) {
-
-        if(n == 0) return 0;
-
-        int s = 1;
-        int e = n;
-
-        int ans = Integer.MIN_VALUE;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if((long)m * m == n){
-                  return m;
-            }
-
-            else if((long)m * m < n){
-                ans = m;
-                s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-        }
-
-        return ans;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid² <= n
-
-Possible Answer
-
-Move Right
-
-Need Largest Valid Value
-```
-
----
-
-# Problem 9: Find Nth Root of a Number
-
-## Pattern
-
-Binary Search on Answers
-
----
-
-## Core Idea
-
-Search:
-
-```text
-1 → M
-```
-
-Find:
-
-```text
-x^N = M
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Answer lies between 1 and M
-```
-
-### Task
-
-```text
-Find integer nth root
-```
-
-### Observation
-
-```text
-pow(mid,N)
-
-Compare with M
-```
-
----
-
-## Recognition Clues
-
-```text
-Nth Root
-Power Function
-Monotonic Search Space
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logM * N)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int NthRoot(int N, int M) {
-
-        int s = 1;
-        int e = M;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(pow(m, N) == M){
-                return m;
-            }
-
-            else if(pow(m, N) < M){
-                s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-        }
-
-        return -1;
-    }
-
-    public long pow(int x, int N){
-
-        long ans = 1;
-
-        for(int i = 0; i < N; i++){
-            ans *= x;
-        }
-
-        return ans;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid^N == M
-
-Answer Found
-
-mid^N < M
-
-Move Right
-
-mid^N > M
-
-Move Left
-```
-
----
-
-# Problem 10: Koko Eating Bananas
-
-## Pattern
-
-Binary Search on Answers (First True)
-
----
-
-## Core Idea
-
-Search Space:
-
-```text
-1 → maxPile
-```
-
-mid represents:
-
-```text
-Bananas Per Hour
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Need minimum eating speed
-```
-
-### Task
-
-```text
-Find smallest speed
-that finishes within h hours
-```
-
-### Observation
-
-```text
-If speed works
-
-Try smaller speed
-
-Move Left
-```
-
----
-
-## Recognition Clues
-
-```text
-Minimum Speed
-Minimum Capacity
-Minimum Rate
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(N log(maxPile))
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int minEatingSpeed(int[] piles, int h) {
-
-        int n = piles.length;
-
-        int max = Integer.MIN_VALUE;
-
-        for(int i = 0; i < n; i++){
-            if(piles[i] > max){
-                max = piles[i];
-            }
-        }
-
-        int s = 1;
-        int e = max;
-
-        int ans = 0;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(possible(piles, m, h)){
-                ans = m;
-                e = m - 1;
-            }
-
-            else{
-                s = m + 1;
-            }
-        }
-
-        return ans;
-    }
-
-    public boolean possible(int[] piles,
-                            int possiblee,
-                            int hr){
-
-        int n = piles.length;
-
-        int hrsPossible = 0;
-
-        for(int i = 0; i< n; i++){
-
-            hrsPossible += Math.ceil(
-                    (double)piles[i]
-                  / (double)possiblee
-            );
-        }
-
-        return hrsPossible <= hr;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid = Speed
-
-Can Finish?
-
-YES
-
-Store Answer
-Move Left
-
-FIRST TRUE PATTERN
-```
-
----
-
-# Pattern Summary
-
-```text
-SINGLE ELEMENT
-→ Pair Property
-
-PEAK ELEMENT
-→ Slope Property
-
-SQUARE ROOT
-→ Largest Valid Value
-
-NTH ROOT
-→ Power Comparison
-
-KOKO
-→ First True Binary Search
-```
-
-# Pattern 36: Binary Search on Answers (Part 3)
-
----
-
-# Problem 11: Minimum Days to Make M Bouquets
-
-## Pattern
-
-Binary Search on Answers (First True)
-
----
-
-## Core Idea
-
-Search Space:
-
-```text
-minBloomDay → maxBloomDay
-```
-
-mid represents:
-
-```text
-Days Allowed
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Each flower blooms on bloomDay[i]
-Need m bouquets
-Each bouquet needs k adjacent flowers
-```
-
-### Task
-
-```text
-Find minimum days required
-```
-
-### Observation
-
-```text
-If bouquets can be formed in mid days
-
-Try smaller days
-
-Move Left
-```
-
----
-
-## Recognition Clues
-
-```text
-Minimum Days
-Minimum Time
-Minimum Capacity
-Minimum Rate
-
-=> First True Binary Search
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(N log(MaxBloom))
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int minDays(int[] bloomDay, int m, int k) {
-
-        int n = bloomDay.length;
-
-        if((long)m * k > n) return -1;
-
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-
-        for(int i = 0; i < n; i++){
-
-            if(bloomDay[i] < min){
-                min = bloomDay[i];
-            }
-
-            if(bloomDay[i] > max){
-                max = bloomDay[i];
-            }
-        }
-
-        int s = min;
-        int e = max;
-
-        int ans = 0;
-
-        while(s <= e){
-
-            int mid = s + (e - s)/ 2;
-
-            if(possible(bloomDay, mid, m, k)){
-                ans = mid;
-                e = mid - 1;
-            }
-
-            else{
-                s = mid + 1;
-            }
-        }
-
-        return ans;
-    }
-
-    public boolean possible(int[] bloomDay,
-                            int daysPossible,
-                            int bouquets,
-                            int k){
-
-        int bouquetsFilled = 0;
-        int cnt = 0;
-
-        for(int i = 0; i < bloomDay.length; i++){
-
-            if(bloomDay[i] <= daysPossible){
-                cnt++;
-            }
-
-            else{
-                bouquetsFilled += cnt / k;
-                cnt = 0;
-            }
-        }
-
-        bouquetsFilled += cnt / k;
-
-        return bouquetsFilled >= bouquets;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid = Days
-
-Can Make m Bouquets?
-
-YES
-Move Left
-
-NO
-Move Right
-```
-
----
-
-# Problem 12: Find the Smallest Divisor Given a Threshold
-
-## Pattern
-
-Binary Search on Answers (First True)
-
----
-
-## Core Idea
-
-Search Space:
-
-```text
-1 → max(nums)
-```
-
-mid represents:
-
-```text
-Divisor
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Need smallest divisor
-```
-
-### Task
-
-```text
-Sum of ceil(nums[i]/divisor)
-must remain <= threshold
-```
-
-### Observation
-
-```text
-If divisor works
-
-Try smaller divisor
-
-Move Left
-```
-
----
-
-## Recognition Clues
-
-```text
-Minimum Divisor
-Minimum Speed
-Minimum Capacity
-
-=> First True Pattern
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(N log(MaxElement))
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int smallestDivisor(int[] nums,
-                               int threshold) {
-
-        int max = Integer.MIN_VALUE;
-
-        for(int num : nums){
-            max = Math.max(max, num);
-        }
-
-        int s = 1;
-        int e = max;
-
-        int ans = 0;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(possible(nums, m, threshold)){
-                ans = m;
-                e = m - 1;
-            }
-
-            else{
-                s = m + 1;
-            }
-        }
-
-        return ans;
-    }
-
-    public boolean possible(int[] nums,
-                            int divisor,
-                            int threshold){
-
-        int ans = 0;
-
-        for(int num : nums){
-
-            ans += (int)Math.ceil(
-                    (double)num/divisor
-                  );
-        }
-
-        return ans <= threshold;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid = Divisor
-
-Works?
-
-YES
-Move Left
-
-Need Minimum Divisor
-```
-
----
-
-# Problem 13: Capacity To Ship Packages Within D Days
-
-## Pattern
-
-Binary Search on Answers (First True)
-
----
-
-## Core Idea
-
-Search Space:
-
-```text
-max(weights)
-        →
-sum(weights)
-```
-
-mid represents:
-
-```text
-Ship Capacity
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Ship packages in order
-Need capacity
-```
-
-### Task
-
-```text
-Find minimum capacity
-that ships all packages
-within D days
-```
-
-### Observation
-
-```text
-If capacity works
-
-Try smaller capacity
-
-Move Left
-```
-
----
-
-## Recognition Clues
-
-```text
-Minimum Capacity
-Minimum Weight
-Minimum Load
-
-=> First True
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(N log(sum))
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int shipWithinDays(int[] weights,
-                              int days) {
-
-       int max = Integer.MIN_VALUE;
-       int sum = 0;
-
-       for(int w : weights){
-
-            max = Math.max(max, w);
-            sum += w;
-       }
-
-       int s = max;
-       int e = sum;
-
-       int ans = 0;
-
-       while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(possible(weights, m, days)){
-                ans = m;
-                e = m - 1;
-            }
-
-            else{
-                s = m + 1;
-            }
-       }
-
-       return ans;
-    }
-
-    public boolean possible(int[] weights,
-                            int packages,
-                            int days){
-
-        int day = 1;
-        int cntOfPackages = 0;
-
-        for(int i = 0; i < weights.length; i++){
-
-            if(cntOfPackages + weights[i]
-                <= packages){
-
-                cntOfPackages += weights[i];
-            }
-
-            else{
-
-                day++;
-                cntOfPackages = weights[i];
-            }
-        }
-
-        return day <= days;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid = Capacity
-
-Can Ship?
-
-YES
-Move Left
-
-Need Minimum Capacity
-```
-
----
-
-# Problem 14: Kth Missing Positive Number
-
-## Pattern
-
-Binary Search on Missing Count
-
----
-
-## Core Idea
-
-Missing Numbers till index m:
-
-```text
-missing = arr[m] - (m + 1)
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Sorted Positive Array
-Some numbers missing
-```
-
-### Task
-
-```text
-Find kth missing number
-```
-
-### Observation
-
-```text
-missing(mid)
-
-If less than k
-
-Move Right
-
-Else
-
-Move Left
-```
-
----
-
-## Recognition Clues
-
-```text
-Missing Numbers
-Sorted Array
-Index Formula
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(logN)
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int findKthPositive(int[] arr,
-                               int k) {
-
-         int n = arr.length;
-
-         int s = 0;
-         int e = n - 1;
-
-         while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            int missing =
-                    arr[m] - (m + 1);
-
-            if(missing < k){
-                s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-         }
-
-         return s + k;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-missing(mid)
-
-=
-arr[mid] - (mid+1)
-
-Answer
-
-=
-low + k
-```
-
----
-
-# Problem 15: Aggressive Cows
-
-## Pattern
-
-Binary Search on Answers (Last True)
-
----
-
-## Core Idea
-
-Search Space:
-
-```text
-1
-→
-maxDistance
-```
-
-mid represents:
-
-```text
-Minimum Distance
-between cows
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text
-Need maximum minimum distance
-```
-
-### Task
-
-```text
-Place all cows
-while maximizing
-minimum distance
-```
-
-### Observation
-
-```text
-If distance works
-
-Try bigger distance
-
-Move Right
-```
-
----
-
-## Recognition Clues
-
-```text
-Maximum Minimum Distance
-Largest Possible Value
-
-=> Last True Pattern
-```
-
----
-
-## TC / SC
-
-```text
-TC = O(Nlog(MaxDistance))
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java
-class Solution {
-
-    public int aggressiveCows(int[] nums,
-                              int k) {
-
-        Arrays.sort(nums);
-
-        int n = nums.length;
-
-        int s = 1;
-        int e = nums[n - 1] - nums[0];
-
-        int ans = Integer.MIN_VALUE;
-
-        while(s <= e){
-
-            int m = s + (e - s) / 2;
-
-            if(canWePlace(nums, k, m)){
-                ans = m;
-                s = m + 1;
-            }
-
-            else{
-                e = m - 1;
-            }
-        }
-
-        return ans;
-    }
-
-    public boolean canWePlace(int[] arr,
-                              int cows,
-                              int minDist){
-
-        int cowsPlaced = 1;
-
-        int last = arr[0];
-
-        for(int i = 0; i < arr.length; i++){
-
-            if(arr[i] - last >= minDist){
-
-                cowsPlaced++;
-                last = arr[i];
-            }
-        }
-
-        return cowsPlaced >= cows;
-    }
-}
-```
-
----
-
-## Quick Revision
-
-```text
-mid = Distance
-
-Can Place All Cows?
-
-YES
-Move Right
-
-Need Maximum Answer
-
-LAST TRUE PATTERN
-```
-
----
-
-# Pattern Summary
-
-```text
-BOUQUETS
-→ First True
-
-SMALLEST DIVISOR
-→ First True
-
-SHIP PACKAGES
-→ First True
-
-KTH MISSING
-→ Missing Count Formula
-
-AGGRESSIVE COWS
-→ Last True
-```
-
-# Google Interview Memory Trick
-
-```text
-Need MINIMUM Answer?
-
-Move LEFT when possible
-
-Examples:
-
-Koko
-Bouquets
-Divisor
-Ship Packages
-Book Allocation
-
--------------------
-
-Need MAXIMUM Answer?
-
-Move RIGHT when possible
-
-Example:
-
-Aggressive Cows
-```
-
-# Pattern 37: Book Allocation + Master Binary Search on Answers Pattern
-
----
-
-# Problem 16: Book Allocation Problem
-
-## Pattern
-
-Binary Search on Answers (First True)
-
----
-
-## Core Idea
-
-Search Space:
-
-```text id="lm4gb7"
-max(bookPages)
-        →
-sum(bookPages)
-```
-
-mid represents:
-
-```text id="e1g1n4"
-Maximum pages
-allowed to a student
-```
-
----
-
-## Interview Explanation
-
-### State
-
-```text id="jgg8dg"
-Books must be allocated
-contiguously
-
-Every student must
-receive at least one book
-```
-
-### Task
-
-```text id="c07lmj"
-Minimize
-
-Maximum pages assigned
-to any student
-```
-
----
-
-### Observation
-
-```text id="r9b6al"
-If allocation possible
-with mid pages
-
-Try smaller maximum
-
-Move Left
-```
-
----
-
-## Recognition Clues
-
-```text id="o1zvzh"
-Minimize Maximum
-
-Allocate Resources
-
-Partition Array
-
-Contiguous Allocation
-
-Students
-Painters
-Workers
-
-=> Binary Search on Answers
-```
-
----
-
-## Why Search Space is
-
-```text id="l8b5pg"
-max(bookPages)
-        →
-sum(bookPages)
-```
-
-### Lower Bound
-
-```text id="kvd2od"
-At least one student
-must take the largest book
-
-So answer can never be
-smaller than max(book)
-```
-
-### Upper Bound
-
-```text id="k7stot"
-One student takes
-all books
-
-Maximum pages
-=
-sum(all books)
-```
-
----
-
-## TC / SC
-
-```text id="v0mkpb"
-TC = O(N log(sum))
-
-SC = O(1)
-```
-
----
-
-## Java Code
-
-```java id="o3ck0g"
-class Solution {
-
-    public int findPages(int[] nums, int m) {
-
-        int n = nums.length;
-
-        if(m > n){
-            return -1;
-        }
-
-        int max = Integer.MIN_VALUE;
-        int sum = 0;
-
-        for(int i = 0; i < n; i++){
-
-            if(nums[i] > max){
-                max = nums[i];
-            }
-
-            sum += nums[i];
-        }
-
-        int s = max;
-        int e = sum;
-
-        int ans = 0;
-
-        while(s <= e){
-
-            int mid = s + (e - s) / 2;
-
-            if(allocationPossible(nums, mid, m)){
-
-                ans = mid;
-                e = mid - 1;
-            }
-
-            else{
-                s = mid + 1;
-            }
-        }
-
-        return s;
-    }
-
-    public boolean allocationPossible(int[] nums,
-                                      int maxPossible,
-                                      int students){
-
-        int studentsAllocatedBooks = 1;
-
-        int sum = 0;
-
-        for(int i = 0; i < nums.length; i++){
-
-            if(sum + nums[i] <= maxPossible){
-
-                sum += nums[i];
-            }
-
-            else{
-
-                studentsAllocatedBooks++;
-                sum = nums[i];
-            }
-        }
-
-        return studentsAllocatedBooks <= students;
-    }
-}
+Pairs start at odd index
 ```
 
 ---
-
-## Dry Run
-
-```text id="ywdo3g"
-Books
-
-10 20 30 40
-
-Students = 2
 
-Try mid = 60
+### Peak Element
 
-Student 1
+Compare
 
-10 + 20 + 30 = 60
-
-Student 2
-
-40
-
-Students Needed = 2
-
-Possible
-
-Move Left
 ```
-
----
-
-## Quick Revision
-
-```text id="b7ajcc"
 mid
-
-=
-Maximum Pages
-
-Possible?
-
-YES
-
-Move Left
-
-Need Minimum Answer
+mid+1
 ```
 
----
-
-# 39. Binary Search on Answer Pattern
+Move toward increasing slope.
 
 ---
 
-# Problems
+# 5. Binary Search on Answer (Most Important)
 
-1. Split Array Largest Sum
-2. Painter's Partition Problem
-3. Minimize Max Distance Between Gas Stations
+## 💡 Idea
 
----
+Don't search the array.
 
-# Problem 1: Split Array Largest Sum
+Search the **answer**.
 
-## Pattern Recognition
+### Problems
 
-Interview Statement:
-
-> We need to minimize the maximum subarray sum.
-
-This is a classic:
-
-```text
-Binary Search on Answer
-```
-
----
-
-## Clarify
-
-Ask interviewer:
-
-* Can array contain negatives? (No)
-* Must subarrays remain contiguous? (Yes)
-* Need minimum possible largest sum? (Yes)
+* Square Root
+* Nth Root
+* Koko Eating Bananas
+* Minimum Days to Make Bouquets
+* Smallest Divisor
+* Ship Packages
+* Kth Missing Positive
+* Aggressive Cows
+* Book Allocation
+* Split Array Largest Sum
+* Painter's Partition
+* Minimize Maximum Distance to Gas Station
 
 ---
 
-## Brute Force
+## Recognition Checklist
 
-Try every possible partition.
+If the problem asks
 
-```text
-Generate all k partitions
-Find largest sum in each
-Take minimum
-```
+* Minimum possible...
+* Maximum possible...
+* Smallest...
+* Largest...
+* Minimize...
+* Maximize...
+* Is it possible?
+* Can we finish within X?
 
-Very expensive.
-
-```text
-TC = Exponential
-```
+➡️ Think **Binary Search on Answer**.
 
 ---
 
-## Observation
-
-Minimum answer:
+## General Template
 
 ```java
-max(nums)
-```
+int low = minimumPossibleAnswer;
+int high = maximumPossibleAnswer;
+int ans = -1;
 
-because one subarray must contain the largest element.
+while(low <= high){
 
-Maximum answer:
+    int mid = low + (high-low)/2;
 
-```java
-sum(nums)
-```
-
-when entire array is one subarray.
-
-Search Space:
-
-```text
-[max(nums), sum(nums)]
-```
-
----
-
-## Feasibility Function
-
-Question:
-
-```text
-Can I split array into <= k parts
-such that every part sum <= maxSum ?
-```
-
----
-
-## Code
-
-```java
-class Solution {
-
-    public boolean possible(int[] nums, int k, int maxSum){
-
-        int cnt = 1;
-        int sum = 0;
-
-        for(int num : nums){
-
-            if(sum + num <= maxSum){
-                sum += num;
-            }
-            else{
-                cnt++;
-                sum = num;
-            }
-        }
-
-        return cnt <= k;
-    }
-
-    public int splitArray(int[] nums, int k) {
-
-        int max = Integer.MIN_VALUE;
-        int sum = 0;
-
-        for(int num : nums){
-            max = Math.max(max,num);
-            sum += num;
-        }
-
-        int low = max;
-        int high = sum;
-
-        while(low <= high){
-
-            int mid = low + (high-low)/2;
-
-            if(possible(nums,k,mid)){
-                high = mid-1;
-            }
-            else{
-                low = mid+1;
-            }
-        }
-
-        return low;
-    }
-}
-```
-
----
-
-## Dry Run
-
-```text
-nums = [7,2,5,10,8]
-k = 2
-
-Answer Range
-
-[10 , 32]
-
-mid = 21
-
-[7,2,5] =14
-+10 =24 ❌
-
-Split
-
-[7,2,5]
-[10,8]
-
-2 partitions
-
-Valid
-
-Move Left
-```
-
----
-
-## Complexity
-
-```text
-TC = O(N log(sum))
-
-SC = O(1)
-```
-
----
-
-# Problem 2: Painter Partition
-
----
-
-## Pattern Recognition
-
-Interview Statement:
-
-> This is identical to Book Allocation and Split Array Largest Sum.
-
-Only wording changes.
-
-```text
-Book -> Board
-Student -> Painter
-Pages -> Length
-```
-
----
-
-## Clarify
-
-* Contiguous boards?
-* One painter paints one continuous segment?
-* Need minimum completion time?
-
----
-
-## Search Space
-
-```java
-low = max(board length)
-
-high = total length
-```
-
----
-
-## Feasibility
-
-Question:
-
-```text
-Can all boards be painted
-using <= painters
-if one painter paints
-at most maxLength units?
-```
-
----
-
-## Code
-
-```java
-class Solution {
-
-    public boolean possible(int[] boards,
-                            int painters,
-                            long maxLength){
-
-        long sum = 0;
-        int cnt = 1;
-
-        for(int board : boards){
-
-            if(board > maxLength)
-                return false;
-
-            if(sum + board <= maxLength){
-                sum += board;
-            }
-            else{
-                cnt++;
-                sum = board;
-            }
-        }
-
-        return cnt <= painters;
-    }
-
-    public int paint(int A,
-                     int B,
-                     int[] C) {
-
-        long sum = 0;
-        int max = Integer.MIN_VALUE;
-
-        for(int x : C){
-            sum += x;
-            max = Math.max(max,x);
-        }
-
-        long low = max;
-        long high = sum;
-
-        long ans = -1;
-
-        while(low <= high){
-
-            long mid =
-                low + (high-low)/2;
-
-            if(possible(C,A,mid)){
-                ans = mid;
-                high = mid-1;
-            }
-            else{
-                low = mid+1;
-            }
-        }
-
-        long mod = 10000003;
-
-        return (int)
-            ((ans%mod)*(B%mod)%mod);
-    }
-}
-```
-
----
-
-## Dry Run
-
-```text
-Boards
-
-10 20 30 40
-
-Painters = 2
-
-mid = 60
-
-Painter1
-
-10+20+30 = 60
-
-Painter2
-
-40
-
-Possible
-
-Move Left
-```
-
----
-
-## Complexity
-
-```text
-TC = O(N log(sum))
-
-SC = O(1)
-```
-
----
-
-# Problem 3: Minimize Maximum Distance Between Gas Stations
-
----
-
-# Approach 1 : Brute Force
-
----
-
-## Idea
-
-Always place next station inside
-
-```text
-Largest Current Interval
-```
-
----
-
-## Example
-
-```text
-1 -------- 13
-
-length = 12
-
-Place station
-
-1 ---- 7 ---- 13
-
-largest interval becomes 6
-```
-
----
-
-## Code
-
-(Your brute force solution)
-
-```java
-double[] howMany = new double[n-1];
-
-for(int gasStations=1;
-    gasStations<=k;
-    gasStations++){
-
-    double maxValue=-1;
-    int maxIndex=-1;
-
-    for(int i=0;i<n-1;i++){
-
-        double diff =
-            arr[i+1]-arr[i];
-
-        double secLength =
-            diff/(howMany[i]+1);
-
-        if(secLength>maxValue){
-            maxValue=secLength;
-            maxIndex=i;
-        }
-    }
-
-    howMany[maxIndex]++;
-}
-```
-
----
-
-## Complexity
-
-```text
-TC = O(K*N)
-
-SC = O(N)
-```
-
----
-
-# Approach 2 : Max Heap
-
----
-
-## Pattern Recognition
-
-Interview Statement:
-
-> We repeatedly need the largest interval.
-
-This immediately suggests:
-
-```text
-Priority Queue / Max Heap
-```
-
----
-
-## Heap Stores
-
-```java
-(secLength , sectionIndex)
-```
-
-Example
-
-```text
-(12,0)
-(6,1)
-(4,2)
-```
-
-Top always:
-
-```text
-Largest Interval
-```
-
----
-
-## Code
-
-```java
-class Pair{
-
-    double secLength;
-    int secIndex;
-
-    Pair(double secLength,
-         int secIndex){
-
-        this.secLength=secLength;
-        this.secIndex=secIndex;
-    }
-}
-
-PriorityQueue<Pair> pq =
-new PriorityQueue<>(
-(a,b)->Double.compare(
-b.secLength,
-a.secLength
-));
-```
-
----
-
-## Why Comparator Reversed?
-
-Normal:
-
-```java
-Double.compare(a,b)
-```
-
-creates
-
-```text
-Min Heap
-```
-
-Reversed:
-
-```java
-Double.compare(b,a)
-```
-
-creates
-
-```text
-Max Heap
-```
-
----
-
-## Complexity
-
-```text
-TC = O(NlogN + KlogN)
-
-SC = O(N)
-```
-
----
-
-# Approach 3 : Binary Search on Answer
-
----
-
-## Pattern Recognition
-
-Interview Statement:
-
-> Minimize the maximum distance.
-
-Keywords:
-
-```text
-Minimize
-Maximum
-```
-
-Immediately:
-
-```text
-Binary Search on Answer
-```
-
----
-
-## Search Space
-
-```java
-low = 0
-
-high = maxGap
-```
-
----
-
-## Feasibility Question
-
-```text
-If max allowed distance = mid
-
-How many gas stations
-must be inserted?
-```
-
----
-
-## Helper
-
-```java
-int numInBetween =
-(int)((gap)/dist);
-```
-
----
-
-### Perfect Division Case
-
-Example
-
-```text
-1 -------- 2
-
-gap = 1
-
-dist = 0.5
-```
-
-Formula gives
-
-```text
-1/0.5 = 2
-```
-
-But only
-
-```text
-1 station
-```
-
-needed.
-
-Therefore:
-
-```java
-if(gap ==
-    numInBetween*dist)
-{
-    numInBetween--;
-}
-```
-
----
-
-## Binary Search Loop
-
-```java
-while(high-low > 1e-6){
-
-    double mid =
-        low+(high-low)/2;
-
-    int stations =
-        gasStationsPlaced
-        (arr,mid);
-
-    if(stations>k){
-        low=mid;
+    if(isPossible(mid)){
+        ans = mid;
+        high = mid - 1;     // minimum answer
     }
     else{
-        high=mid;
+        low = mid + 1;
     }
 }
+
+return ans;
 ```
 
 ---
 
-## Why 1e-6?
+## Common Answer Range
 
-For doubles:
+### Low
 
-```java
-while(low<=high)
+* 1
+* minimum element
+* maximum element
+* largest book
+
+### High
+
+* sum of array
+* maximum pile
+* total distance
+
+---
+
+## Common Helper Functions
+
+### Counting
+
+* Students required
+* Days required
+* Bouquets formed
+* Cows placed
+
+### Simulation
+
+* Can ship?
+* Can place cows?
+* Can divide?
+
+---
+
+# ⭐ Hard Pattern 1 : Aggressive Cows
+
+## Answer Space
+
+```
+Minimum distance = 1
+
+Maximum distance =
+last stall - first stall
 ```
 
-is dangerous.
-
-Floating points may never become equal.
-
-Hence:
+### Helper
 
 ```java
+boolean canPlace(int[] stalls,int cows,int dist){
+
+    int placed = 1;
+    int last = stalls[0];
+
+    for(int i=1;i<stalls.length;i++){
+
+        if(stalls[i]-last >= dist){
+            placed++;
+            last = stalls[i];
+        }
+
+        if(placed>=cows)
+            return true;
+    }
+
+    return false;
+}
+```
+
+### Binary Search
+
+```java
+Arrays.sort(stalls);
+
+int low = 1;
+int high = stalls[n-1]-stalls[0];
+
+while(low<=high){
+
+    int mid=(low+high)/2;
+
+    if(canPlace(stalls,cows,mid))
+        low=mid+1;
+    else
+        high=mid-1;
+}
+
+return high;
+```
+
+**Trick**
+
+> We want the **largest minimum distance**.
+
+---
+
+# ⭐ Hard Pattern 2 : Book Allocation
+
+## Answer Space
+
+```
+Low = largest book
+
+High = sum of all pages
+```
+
+### Helper
+
+```java
+boolean canAllocate(int[] arr,int students,int pages){
+
+    int count=1;
+    int sum=0;
+
+    for(int x:arr){
+
+        if(sum+x<=pages){
+            sum+=x;
+        }
+        else{
+            count++;
+            sum=x;
+        }
+
+        if(count>students)
+            return false;
+    }
+
+    return true;
+}
+```
+
+**Remember**
+
+```
+Maximum book
+
+↓
+
+Minimum possible answer
+```
+
+---
+
+# ⭐ Hard Pattern 3 : Minimize Maximum Distance to Gas Station
+
+## Trick
+
+Binary Search on **Double Answer**
+
+Answer isn't integer.
+
+Instead
+
+```
 while(high-low > 1e-6)
 ```
 
----
-
-## Complexity
-
-```text
-TC = O(N log(range))
-
-SC = O(1)
-```
-
----
-
-# Interview One-Liners
-
-```text
-Split Array
-=
-Book Allocation Clone
-
-Painter Partition
-=
-Book Allocation Clone
-
-Gas Stations
-=
-Heap OR Binary Search Answer
-
-Whenever question says:
-
-Minimize Maximum
-
-or
-
-Maximize Minimum
-
-Think
-
-Binary Search on Answer
-immediately.
-```
----
-
-# Binary Search on Answer + Partition Pattern
-
----
-
-# 1. Split Array Largest Sum
-
-## Pattern
-Binary Search on Answer
-
----
-
-## Interview Flow
-
-### Clarify
-
-- Are all numbers positive?
-- Can k = n?
-- Need minimum possible largest subarray sum?
-
----
-
-### Brute Force
-
-Try every possible partition.
-
-TC: Exponential
-
-Not feasible.
-
----
-
-### Observation
-
-Answer lies between:
-
-```text
-max(nums) <= answer <= sum(nums)
-```
-
-Why?
-
-- Every subarray contains at least one element.
-- Largest sum can never be less than maximum element.
-- If no split is done, answer becomes total array sum.
-
----
-
-### Plan
-
-For a candidate answer `mid`:
-
-Can we split array into at most `k` subarrays
-such that each subarray sum ≤ `mid`?
-
-If YES:
-- Try smaller answer
-
-If NO:
-- Increase answer
-
----
-
-## Code
+### Helper
 
 ```java
-class Solution {
+int requiredStations(int[] arr,double dist){
 
-    public boolean possible(int[] nums, int k, int maxSum){
+    int count=0;
 
-        int cnt = 1;
-        int sum = 0;
+    for(int i=1;i<arr.length;i++){
 
-        for(int num : nums){
+        count += (int)((arr[i]-arr[i-1])/dist);
 
-            if(sum + num <= maxSum){
-                sum += num;
-            }
-            else{
-                cnt++;
-                sum = num;
-            }
-        }
-
-        return cnt <= k;
+        if((arr[i]-arr[i-1])%dist==0)
+            count--;
     }
 
-    public int splitArray(int[] nums, int k) {
-
-        int max = Integer.MIN_VALUE;
-        int sum = 0;
-
-        for(int num : nums){
-            max = Math.max(max,num);
-            sum += num;
-        }
-
-        int low = max;
-        int high = sum;
-
-        while(low <= high){
-
-            int mid = low + (high-low)/2;
-
-            if(possible(nums,k,mid)){
-                high = mid - 1;
-            }
-            else{
-                low = mid + 1;
-            }
-        }
-
-        return low;
-    }
+    return count;
 }
 ```
 
-### TC
+Binary Search
 
-```text
-O(n log(sum))
+```
+if(required<=k)
+
+search left
+
+else
+
+search right
 ```
 
-### SC
+**Remember**
 
-```text
-O(1)
+Floating point Binary Search uses
+
+```
+while(high-low > 1e-6)
 ```
 
----
+instead of
 
-# 2. Painter's Partition Problem
-
-## Pattern
-
-Binary Search on Answer
-
----
-
-## Observation
-
-Boards represent work.
-
-Each painter paints contiguous boards.
-
-Need minimum time.
-
----
-
-## Search Space
-
-```text
-max(board length)
-to
-sum(board lengths)
+```
+low<=high
 ```
 
 ---
 
-## Code
-
-```java
-class Solution {
-
-    public boolean possible(int[] boards,
-                            int painters,
-                            long maxLength){
-
-        int cnt = 1;
-        long sum = 0;
-
-        for(int board : boards){
-
-            if(board > maxLength)
-                return false;
-
-            if(sum + board <= maxLength){
-                sum += board;
-            }
-            else{
-                cnt++;
-                sum = board;
-            }
-        }
-
-        return cnt <= painters;
-    }
-
-    public int paint(int A,int B,int[] C){
-
-        int max = Integer.MIN_VALUE;
-        long sum = 0;
-
-        for(int board : C){
-            max = Math.max(max,board);
-            sum += board;
-        }
-
-        long low = max;
-        long high = sum;
-        long ans = -1;
-
-        while(low <= high){
-
-            long mid = low + (high-low)/2;
-
-            if(possible(C,A,mid)){
-                ans = mid;
-                high = mid - 1;
-            }
-            else{
-                low = mid + 1;
-            }
-        }
-
-        long mod = 10000003;
-
-        return (int)((ans % mod)*(B % mod)%mod);
-    }
-}
-```
-
-### TC
-
-```text
-O(n log(sum))
-```
-
-### SC
-
-```text
-O(1)
-```
-
----
-
-# 3. Minimize Max Distance Between Gas Stations
-
----
-
-## Pattern
-
-### Approach 1
-Greedy
-
-### Approach 2
-Heap
-
-### Approach 3
-Binary Search on Answer (Best)
-
----
-
-# Approach 1 : Brute Force
+# ⭐ Hard Pattern 4 : Median of Two Sorted Arrays
 
 ## Idea
 
-Always place gas station inside the largest section.
+Never merge arrays.
 
----
+Partition both arrays.
 
-### TC
+```
+Left Half
 
-```text
-O(k*n)
+<=
+
+Right Half
 ```
 
-### SC
+Maintain
 
-```text
-O(n)
+```
+cut1
+
+cut2
+```
+
+such that
+
+```
+cut1+cut2=(n1+n2+1)/2
+```
+
+Conditions
+
+```
+left1<=right2
+
+&&
+
+left2<=right1
+```
+
+If true
+
+Median found.
+
+Else
+
+Adjust partition.
+
+**Time**
+
+```
+O(log(min(n,m)))
 ```
 
 ---
 
-# Approach 2 : Priority Queue
+# 6. Binary Search on 2D Matrix
 
-## Pattern
+## Problems
 
-Top K Repeated Selection
+* Row with Maximum 1s
+* Search Matrix
+* Search Matrix II
+* Peak II
+* Matrix Median
 
 ---
 
-### Idea
+## Pattern A : Row Wise Binary Search
 
-Store
+### Problem
 
-```text
-(sectionLength, sectionIndex)
+Row with Maximum 1s
+
+Approach
+
+Binary search each row.
+
+Find first one.
+
+Maximum count wins.
+
+---
+
+## Pattern B : Flatten Matrix
+
+### Problem
+
+Search Matrix
+
+Convert
+
+```
+row = mid / m
+
+col = mid % m
 ```
 
-inside max heap.
-
-Always split the largest section.
+Apply normal Binary Search.
 
 ---
 
-## Code
+## Pattern C : Staircase Search
+
+### Problem
+
+Search Matrix II
+
+Start from
+
+```
+Top Right
+```
+
+Move
+
+```
+Current > Target
+
+↓
+
+Left
+
+Current < Target
+
+↓
+
+Down
+```
+
+Time
+
+```
+O(n+m)
+```
+
+---
+
+## Pattern D : Binary Search on Columns
+
+### Problem
+
+Peak II
+
+Choose middle column.
+
+Find maximum element.
+
+Compare neighbours.
+
+Move toward larger neighbour.
+
+---
+
+## Pattern E : Binary Search on Answer
+
+### Problem
+
+Matrix Median
+
+Binary search over values.
+
+For every value
+
+Count
+
+```
+Elements <= mid
+```
+
+using Lower Bound in every row.
+
+---
+
+# Binary Search on Two Sorted Arrays
+
+## Problems
+
+* Median of Two Sorted Arrays
+* Kth Element of Two Sorted Arrays
+
+## Trick
+
+Always Binary Search on the **smaller array**.
+
+Maintain partitions.
+
+Never merge arrays.
+
+Complexity
+
+```
+O(log(min(n,m)))
+```
+
+---
+
+# 📌 Final Revision Map
+
+| Pattern                 | Problems                                                                                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Classic Binary Search   | Search X                                                                                                                                       |
+| Boundary Search         | Lower Bound, Upper Bound, Search Insert, Floor & Ceil, First/Last Occurrence, Count Occurrences                                                |
+| Rotated Array           | Search Rotated I, Search Rotated II, Minimum, Rotation Count                                                                                   |
+| Property Search         | Single Element, Peak Element                                                                                                                   |
+| Binary Search on Answer | Square Root, Nth Root, Koko, Bouquets, Divisor, Ship Packages, Aggressive Cows, Book Allocation, Split Array, Painter's Partition, Gas Station |
+| Two Sorted Arrays       | Median, Kth Element                                                                                                                            |
+| 2D Binary Search        | Row Max 1s, Search Matrix, Matrix II, Peak II, Matrix Median                                                                                   |
+
+---
+
+# 🚀 Master Binary Search Templates
+
+1. Classic Binary Search
+2. Lower Bound / Upper Bound
+3. Rotated Array
+4. Property Search
+5. Binary Search on Answer (`isPossible()`)
+6. Partition Binary Search (Median/Kth Element)
+7. Matrix Binary Search
+
+---
+
+# ⭐ Most Important Interview Tricks
+
+* **Minimum possible answer** → `high = mid - 1`
+* **Maximum possible answer** → `low = mid + 1`
+* Always derive **Low** and **High** before coding.
+* Write `isPossible(mid)` first for answer-space problems.
+* For floating-point answers (Gas Station), use:
 
 ```java
-class Pair{
-
-    double secLength;
-    int secIndex;
-
-    Pair(double secLength,int secIndex){
-        this.secLength = secLength;
-        this.secIndex = secIndex;
-    }
-}
-
-class Solution {
-
-    public double minimiseMaxDistance(int[] arr,int k){
-
-        int n = arr.length;
-
-        int[] howMany = new int[n-1];
-
-        PriorityQueue<Pair> pq =
-            new PriorityQueue<>(
-                (a,b) ->
-                Double.compare(
-                    b.secLength,
-                    a.secLength));
-
-        for(int i=0;i<n-1;i++){
-
-            pq.offer(
-                new Pair(
-                    arr[i+1]-arr[i],
-                    i));
-        }
-
-        for(int gas=1;gas<=k;gas++){
-
-            Pair top = pq.poll();
-
-            int idx = top.secIndex;
-
-            howMany[idx]++;
-
-            double diff =
-                arr[idx+1]-arr[idx];
-
-            double newLen =
-                diff/(howMany[idx]+1);
-
-            pq.offer(
-                new Pair(newLen,idx));
-        }
-
-        return pq.peek().secLength;
-    }
-}
+while(high - low > 1e-6)
 ```
 
-### TC
+instead of `low <= high`.
 
-```text
-O(n log n + k log n)
-```
+* For **Median/Kth Element**, **never merge arrays**. Use partition-based Binary Search on the smaller array.
 
-### SC
+* For **Nth Root**, avoid overflow by multiplying step-by-step and stopping early if the product exceeds the target.
 
-```text
-O(n)
-```
+# Binary Search on 2D Arrays - Striver A2Z Revision Notes
+
+Unlike 1D Binary Search, the algorithm for 2D matrices depends entirely on the **sorting property of the matrix**.
+
+> **Golden Rule:** Before solving any 2D Binary Search problem, first identify **how the matrix is sorted**.
 
 ---
 
-# Approach 3 : Binary Search on Answer
+# Pattern 1: Binary Search in Every Row
 
-## Observation
+## 💡 Matrix Property
 
-Suppose answer = 4
+* Every row is individually sorted.
+* Rows are independent.
+* Need information from each row.
 
-Question becomes:
+### Problems
 
-```text
-Can every section be made <= 4
-using at most k stations?
-```
+* Find Row with Maximum 1's
 
-YES/NO problem.
+### General Approach
 
-Hence Binary Search on Answer.
-
----
-
-## Search Space
+* Binary search every row independently.
+* Find the **first occurrence of 1**.
+* Count the number of 1's.
 
 ```text
-0
-to
-maximum existing gap
+Count = Columns - FirstOneIndex
 ```
 
----
+Return the row having the maximum count.
 
-## Code
-
-```java
-class Solution {
-
-    int stationsNeeded(int[] arr,double dist){
-
-        int cnt = 0;
-
-        for(int i=0;i<arr.length-1;i++){
-
-            int num =
-                (int)((arr[i+1]-arr[i])/dist);
-
-            if((arr[i+1]-arr[i])
-                == num*dist){
-
-                num--;
-            }
-
-            cnt += num;
-        }
-
-        return cnt;
-    }
-
-    public double minimiseMaxDistance(
-            int[] arr,int k){
-
-        double low = 0;
-        double high = 0;
-
-        for(int i=0;i<arr.length-1;i++){
-
-            high = Math.max(
-                high,
-                arr[i+1]-arr[i]);
-        }
-
-        while(high-low > 1e-6){
-
-            double mid =
-                low+(high-low)/2;
-
-            if(stationsNeeded(arr,mid)>k){
-
-                low = mid;
-            }
-            else{
-
-                high = mid;
-            }
-        }
-
-        return high;
-    }
-}
-```
-
-### TC
+### Time Complexity
 
 ```text
-O(n log(range × 10^6))
+O(n log m)
 ```
 
-### SC
+### Space Complexity
 
 ```text
 O(1)
@@ -4429,122 +715,54 @@ O(1)
 
 ---
 
-# 4. Median of Two Sorted Arrays
+# Pattern 2: Treat Matrix as a 1D Sorted Array
 
-## Pattern
+## 💡 Matrix Property
 
-Partition Binary Search
-
----
-
-## Recognition
-
-Keywords:
-
-- Two Sorted Arrays
-- Median
-- O(log(min(n,m)))
-
-Immediately think:
+The entire matrix is globally sorted.
 
 ```text
-Partition Binary Search
+Last element of row i < First element of row i+1
 ```
 
----
-
-## Valid Partition
+Example
 
 ```text
-l1 <= r2
-
-AND
-
-l2 <= r1
+1   3   5
+7   9   11
+13  15  17
 ```
 
----
+Flattened view
 
-## Code
+```text
+1 3 5 7 9 11 13 15 17
+```
+
+### Problems
+
+* Search in a 2D Matrix
+
+### General Approach
+
+Imagine the matrix as one sorted array.
+
+Convert the 1D index into row and column.
 
 ```java
-class Solution {
-
-    public double findMedianSortedArrays(
-            int[] nums1,
-            int[] nums2){
-
-        if(nums1.length > nums2.length)
-            return findMedianSortedArrays(
-                    nums2,nums1);
-
-        int n1 = nums1.length;
-        int n2 = nums2.length;
-
-        int low = 0;
-        int high = n1;
-
-        int left =
-            (n1+n2+1)/2;
-
-        while(low<=high){
-
-            int cut1 =
-                low+(high-low)/2;
-
-            int cut2 =
-                left-cut1;
-
-            int l1 =
-                cut1==0 ?
-                Integer.MIN_VALUE :
-                nums1[cut1-1];
-
-            int l2 =
-                cut2==0 ?
-                Integer.MIN_VALUE :
-                nums2[cut2-1];
-
-            int r1 =
-                cut1==n1 ?
-                Integer.MAX_VALUE :
-                nums1[cut1];
-
-            int r2 =
-                cut2==n2 ?
-                Integer.MAX_VALUE :
-                nums2[cut2];
-
-            if(l1<=r2 && l2<=r1){
-
-                if((n1+n2)%2==1)
-                    return Math.max(l1,l2);
-
-                return
-                (Math.max(l1,l2)
-                +Math.min(r1,r2))/2.0;
-            }
-
-            else if(l1>r2){
-                high=cut1-1;
-            }
-            else{
-                low=cut1+1;
-            }
-        }
-
-        return 0;
-    }
-}
+row = mid / columns;
+col = mid % columns;
 ```
 
-### TC
+Then perform a normal Binary Search.
+
+### Time Complexity
 
 ```text
-O(log(min(n1,n2)))
+O(log(n × m))
 ```
 
-### SC
+### Space Complexity
 
 ```text
 O(1)
@@ -4552,106 +770,72 @@ O(1)
 
 ---
 
-# 5. Kth Element of Two Sorted Arrays
+# Pattern 3: Staircase Search
 
-## Pattern
+## 💡 Matrix Property
 
-Partition Binary Search
+* Every row is sorted.
+* Every column is sorted.
+* Entire matrix is **NOT** globally sorted.
 
----
-
-## Key Idea
-
-Median:
+Example
 
 ```text
-Left Side Size = Total/2
+1   4   7
+2   5   8
+3   6   9
 ```
 
-Kth Element:
+Flattening **does not work** here.
+
+### Problems
+
+* Search in 2D Matrix II
+
+### General Approach
+
+Start from
 
 ```text
-Left Side Size = k
+Top Right
 ```
 
-Everything else remains same.
-
----
-
-## Code
-
-```java
-class Solution {
-
-    public int kthElement(
-            int[] a,
-            int[] b,
-            int k){
-
-        int n1 = a.length;
-        int n2 = b.length;
-
-        if(n1 > n2)
-            return kthElement(b,a,k);
-
-        int low =
-            Math.max(0,k-n2);
-
-        int high =
-            Math.min(k,n1);
-
-        while(low<=high){
-
-            int cut1 =
-                low+(high-low)/2;
-
-            int cut2 =
-                k-cut1;
-
-            int l1 =
-                cut1==0 ?
-                Integer.MIN_VALUE :
-                a[cut1-1];
-
-            int l2 =
-                cut2==0 ?
-                Integer.MIN_VALUE :
-                b[cut2-1];
-
-            int r1 =
-                cut1==n1 ?
-                Integer.MAX_VALUE :
-                a[cut1];
-
-            int r2 =
-                cut2==n2 ?
-                Integer.MAX_VALUE :
-                b[cut2];
-
-            if(l1<=r2 && l2<=r1){
-                return Math.max(l1,l2);
-            }
-
-            else if(l1>r2){
-                high=cut1-1;
-            }
-            else{
-                low=cut1+1;
-            }
-        }
-
-        return 0;
-    }
-}
-```
-
-### TC
+or
 
 ```text
-O(log(min(n1,n2)))
+Bottom Left
 ```
 
-### SC
+Reason
+
+```text
+Left  → Smaller
+Down  → Larger
+```
+
+Decision
+
+```text
+Current > Target
+
+↓
+
+Move Left
+
+Current < Target
+
+↓
+
+Move Down
+```
+
+### Time Complexity
+
+```text
+O(n + m)
+```
+
+### Space Complexity
 
 ```text
 O(1)
@@ -4659,68 +843,186 @@ O(1)
 
 ---
 
-# Google Interview Revision Sheet
+# Pattern 4: Binary Search on Columns
 
-## Binary Search on Answer
+## 💡 Matrix Property
+
+Need to find a **Peak Element**.
+
+### Problems
+
+* Find Peak Element II
+
+### General Approach
+
+1. Choose the middle column.
+2. Find the maximum element in that column.
+3. Compare it with its left and right neighbours.
+4. Move toward the larger neighbour.
+5. Repeat until a peak is found.
+
+This is exactly the 2D version of the 1D Peak Element problem.
+
+### Time Complexity
 
 ```text
-Split Array Largest Sum
-Painter Partition
-Book Allocation
-Aggressive Cows
-Koko Eating Bananas
-Bouquets
-Smallest Divisor
-Ship Packages
-Gas Station Distance
+O(n log m)
+```
+
+### Space Complexity
+
+```text
+O(1)
 ```
 
 ---
 
-## Partition Binary Search
+# Pattern 5: Binary Search on Answer (Value Space)
+
+## 💡 Matrix Property
+
+Rows are sorted.
+
+Need to find
+
+* Median
+* Kth Smallest
+* Similar value-based answers
+
+### Problems
+
+* Matrix Median
+
+### General Approach
+
+Instead of searching indices, search the **value range**.
+
+Choose
 
 ```text
-Median of Two Sorted Arrays
-Kth Element of Two Sorted Arrays
+Low = Minimum element
+
+High = Maximum element
+```
+
+For every candidate value
+
+```text
+mid
+```
+
+Count
+
+```text
+Elements <= mid
+```
+
+using **Upper Bound** (or Lower Bound depending on implementation) in every row.
+
+If enough elements are less than or equal to `mid`
+
+→ Search Left
+
+Else
+
+→ Search Right
+
+### Time Complexity
+
+```text
+O(log(Value Range) × n × log m)
+```
+
+### Space Complexity
+
+```text
+O(1)
 ```
 
 ---
 
-## Heap Pattern
+# 📌 Recognition Flowchart
 
 ```text
-Minimize Max Distance Between Gas Stations
-Merge K Sorted Lists
-Top K Elements
-K Closest Elements
+                         MATRIX
+                            │
+                            ▼
+          Is the entire matrix globally sorted?
+                            │
+               Yes ─────────► Flatten Matrix
+                            │
+               No
+                            ▼
+      Are rows and columns individually sorted?
+                            │
+                Yes
+                            ▼
+        Searching for an element?
+           │                     │
+           ▼                     ▼
+ Staircase Search       Peak Element II
+                         (Column Binary Search)
+
+                            │
+                            ▼
+      Need Median / Kth Smallest Value?
+                            │
+                           Yes
+                            ▼
+            Binary Search on Answer
+
+                            │
+                            ▼
+     Need information from each row?
+                            │
+                           Yes
+                            ▼
+          Binary Search Every Row
 ```
 
 ---
 
-## Recognition Keywords
+# 📊 Final Revision Map
 
-```text
-Minimize Maximum
-Maximize Minimum
-Smallest Possible
-Largest Possible
-
-=> Binary Search on Answer
-```
-
-```text
-Two Sorted Arrays
-Median
-Kth Element
-
-=> Partition Binary Search
-```
-
-```text
-Repeated Largest / Smallest Selection
-
-=> Heap
-```
+| Pattern                 | Matrix Property                | Problems                  | Time Complexity             |
+| ----------------------- | ------------------------------ | ------------------------- | --------------------------- |
+| Binary Search Every Row | Every row sorted independently | Find Row with Maximum 1's | **O(n log m)**              |
+| Flatten Matrix          | Entire matrix globally sorted  | Search in 2D Matrix       | **O(log(n×m))**             |
+| Staircase Search        | Rows & Columns sorted          | Search in Matrix II       | **O(n+m)**                  |
+| Column Binary Search    | Peak search                    | Find Peak Element II      | **O(n log m)**              |
+| Binary Search on Answer | Search over value space        | Matrix Median             | **O(log(range) × n log m)** |
 
 ---
 
+# 🚀 Interview Recognition Checklist
+
+Before solving any 2D Binary Search problem, ask these questions:
+
+### ✅ Can I flatten the matrix into one sorted array?
+
+→ Use **Flatten Matrix Binary Search**
+
+### ✅ Are both rows and columns sorted?
+
+* Searching an element → **Staircase Search**
+* Finding a peak → **Column Binary Search**
+
+### ✅ Am I searching for a value (Median/Kth Smallest)?
+
+→ Use **Binary Search on Answer**
+
+### ✅ Do I need to process every row independently?
+
+→ Use **Binary Search in Every Row**
+
+---
+
+# ⭐ 5 Master Patterns to Memorize
+
+1. **Binary Search Every Row** → Find Row with Maximum 1's
+2. **Flatten Matrix** → Search in 2D Matrix
+3. **Staircase Search** → Search in Matrix II
+4. **Column Binary Search** → Find Peak Element II
+5. **Binary Search on Answer** → Matrix Median
+
+> **Rule of Thumb:** Always identify the matrix's sorting property first. Once the property is known, the correct Binary Search pattern becomes obvious.
