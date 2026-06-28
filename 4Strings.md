@@ -1,842 +1,474 @@
-# String Pattern Notes for Google Interviews
+# String Patterns - Striver A2Z DSA Sheet
+
+A quick revision guide to recognize the underlying pattern before solving String problems.
 
 ---
 
-# 1. Remove Outermost Parentheses
+# 1. Character Traversal Pattern
 
-**Problem:** LeetCode 1021
+## 💡 Idea
 
----
+Traverse the string once while maintaining some state.
 
-## Interview Flow
+### Problems
 
-### Clarify
+* Largest Odd Number in a String
+* Maximum Nesting Depth of Parentheses
+* Remove Outermost Parentheses
 
-- String contains only valid parentheses?
-- Multiple primitive substrings possible?
-- Return resulting string after removing outermost brackets?
+### General Approach
 
----
+* Scan the string from left to right.
+* Maintain variables such as:
 
-## Brute Force
+  * Counter
+  * Depth
+  * Answer
+* Update the state based on the current character.
 
-- Find every primitive substring.
-- Remove first and last bracket from each primitive.
-- Join all substrings.
+### Examples
 
-### Complexity
+**Largest Odd Number**
 
-- Time: O(N)
-- Space: O(N)
+* Find the last odd digit.
+* Return substring from `0` to that index.
 
----
+**Maximum Nesting Depth**
 
-## Pattern
+* Increment depth on `'('`
+* Decrement depth on `')'`
+* Track maximum depth.
 
-### Depth Counter Pattern
+**Remove Outermost Parentheses**
 
-Whenever:
+* Increase depth after `'('`
+* Decrease depth before `')'`
+* Include characters only when depth belongs to an inner primitive.
 
-- '(' increases depth
-- ')' decreases depth
-
-Outer parentheses are exactly those where:
-
-- depth = 0 before '('
-- depth = 0 after ')'
-
----
-
-## Plan
-
-- Maintain depth
-- Append '(' only if depth > 0
-- Append ')' only if depth > 1 before decrement
-- Skip outermost brackets
-
----
-
-## Visualization
+### Time Complexity
 
 ```text
-Input:
+O(n)
+```
 
-(()())(())
+---
 
+# 2. Two Pointer Pattern
+
+## 💡 Idea
+
+Use two pointers to compare characters or process words.
+
+### Problems
+
+* Palindrome Check
+* Reverse Every Word
+* Reverse Words in a String
+
+### General Approach
+
+Maintain
+
+```text
+left
+right
+```
+
+Operations may include
+
+* Compare characters
+* Reverse a word
+* Skip extra spaces
+* Build answer
+
+### Common Techniques
+
+* Skip leading/trailing spaces
+* Reverse characters
+* Reverse entire string
+* Reverse individual words
+
+### Time Complexity
+
+```text
+O(n)
+```
+
+---
+
+# 3. Hashing Pattern
+
+## 💡 Idea
+
+Store frequencies or mappings for fast lookup.
+
+### Problems
+
+* Isomorphic Strings
+* Anagram
+* Sort Characters by Frequency
+
+### General Approach
+
+Use
+
+* HashMap
+* Frequency Array (`26` / `128` / `256`)
+
+### Applications
+
+**Frequency Counting**
+
+```text
+character → count
+```
+
+**Character Mapping**
+
+```text
+character1 → character2
+```
+
+For Isomorphic Strings
+
+* Mapping must be one-to-one.
+* Check both directions.
+
+### Time Complexity
+
+```text
+O(n)
+```
+
+---
+
+# 4. Prefix Matching Pattern
+
+## 💡 Idea
+
+Compare strings from the beginning.
+
+### Problems
+
+* Longest Common Prefix
+* Rotate String
+
+### General Approach
+
+Start from index `0`.
+
+Stop when the first mismatch occurs.
+
+### Rotation Trick
+
+Instead of checking every rotation
+
+```text
+(s + s).contains(goal)
+```
+
+### Time Complexity
+
+```text
+O(n)
+```
+
+---
+
+# 5. Parsing Pattern
+
+## 💡 Idea
+
+Convert one representation into another.
+
+### Problems
+
+* Roman to Integer
+* String to Integer (atoi)
+
+### General Approach
+
+Read characters one by one.
+
+Maintain
+
+```text
+result
+sign
+currentNumber
+```
+
+Carefully handle
+
+* Leading spaces
+* '+' / '-'
+* Overflow
+* Invalid characters
+
+### Roman Numerals
+
+Compare
+
+```text
+currentValue
+
+nextValue
+```
+
+If
+
+```text
+current < next
+```
+
+Subtract.
+
+Else
+
+Add.
+
+---
+
+# 6. Expand Around Center Pattern
+
+## 💡 Idea
+
+Every palindrome expands from its center.
+
+### Problems
+
+* Longest Palindromic Substring
+
+### General Approach
+
+For every index
+
+Expand
+
+**Odd Length**
+
+```text
+(i)
+```
+
+**Even Length**
+
+```text
+(i, i+1)
+```
+
+Continue expanding while
+
+```text
+left >= 0
+right < n
+s[left] == s[right]
+```
+
+Track the longest palindrome.
+
+### Time Complexity
+
+```text
+O(n²)
+```
+
+---
+
+# 7. Brute Force + Incremental Frequency Pattern
+
+## 💡 Idea
+
+Generate substrings while updating frequencies incrementally.
+
+### Problems
+
+* Sum of Beauty of All Substrings
+
+### General Approach
+
+* Fix starting index.
+* Extend ending index.
+* Update frequency array.
+* Compute
+
+```text
+beauty = maxFrequency - minFrequency
+```
+
+Avoid recomputing frequencies from scratch.
+
+### Time Complexity
+
+```text
+O(n² × 26)
+```
+
+---
+
+# 8. Mathematical Counting Pattern
+
+## 💡 Idea
+
+Use formulas instead of generating all possibilities.
+
+### Problems
+
+* Count Number of Substrings
+
+### General Approach
+
+For a string of length `n`
+
+```text
+Number of Substrings = n × (n + 1) / 2
+```
+
+No enumeration required.
+
+### Time Complexity
+
+```text
+O(1)
+```
+
+---
+
+# 9. Stack / Balance Simulation Pattern
+
+## 💡 Idea
+
+Track nesting depth without using an explicit stack whenever possible.
+
+### Problems
+
+* Remove Outermost Parentheses
+* Maximum Nesting Depth
+
+### General Approach
+
+Maintain
+
+```text
 depth
-
-( -> 1 skip
-( -> 2 add
-) -> 1 add
-( -> 2 add
-) -> 1 add
-) -> 0 skip
-
-Result:
-()()
 ```
 
----
-
-## Code
-
-```java
-class Solution {
-    public String removeOuterParentheses(String s) {
-        StringBuilder ans = new StringBuilder();
-        int depth = 0;
-
-        for(int i = 0; i < s.length(); i++) {
-
-            if(s.charAt(i) == '(') {
-
-                if(depth > 0) {
-                    ans.append('(');
-                }
-
-                depth++;
-            }
-            else {
-
-                depth--;
-
-                if(depth > 0) {
-                    ans.append(')');
-                }
-            }
-        }
-
-        return ans.toString();
-    }
-}
-```
-
----
-
-## Remember
+Rules
 
 ```text
-Opening:
-Add first?
-NO
-
-Closing:
-Add last?
-NO
-
-Skip depth=0 boundaries
-```
-
----
-
-# 2. Reverse Words In A String
-
-**Problem:** LeetCode 151
-
----
-
-## Interview Flow
-
-### Clarify
-
-- Multiple spaces possible?
-- Leading spaces possible?
-- Trailing spaces possible?
-
----
-
-## Brute Force
-
-- split()
-- reverse array
-- join
-
-### Complexity
-
-O(N)
-
-But split creates extra arrays.
-
----
-
-## Pattern
-
-### Reverse Traversal Pattern
-
-Instead of reversing words:
-
-Traverse string from right → left.
-
----
-
-## Plan
-
-```text
-Skip spaces
-
-Find word end
-
-Find word start
-
-Append word
-
-Repeat
-```
-
----
-
-## Visualization
-
-```text
-Input
-
-"the sky is blue"
-
-Start from end
-
-blue
-is
-sky
-the
-
-Output
-
-"blue is sky the"
-```
-
----
-
-## Code
-
-```java
-class Solution {
-    public String reverseWords(String s) {
-
-        StringBuilder ans = new StringBuilder();
-
-        int i = s.length() - 1;
-
-        while(i >= 0) {
-
-            while(i >= 0 && s.charAt(i) == ' ') {
-                i--;
-            }
-
-            if(i < 0) break;
-
-            int j = i;
-
-            while(j >= 0 && s.charAt(j) != ' ') {
-                j--;
-            }
-
-            if(ans.length() > 0) {
-                ans.append(" ");
-            }
-
-            ans.append(s.substring(j + 1, i + 1));
-
-            if(j < 0) break;
-
-            i = j - 1;
-        }
-
-        return ans.toString();
-    }
-}
-```
-
----
-
-## Remember
-
-```text
-Right → Left
-
-Skip Spaces
-
-Take Word
-
-Append
-
-Repeat
-```
-
----
-
-# 3. Largest Odd Number In String
-
-**Problem:** LeetCode 1903
-
----
-
-## Interview Flow
-
-### Clarify
-
-- String contains digits only?
-- Need largest odd substring?
-
----
-
-## Observation
-
-For number to be odd:
-
-```text
-Last digit must be odd
-```
-
----
-
-## Pattern
-
-### Suffix Search Pattern
-
-Search from end.
-
-First odd digit found:
-
-Everything before it forms answer.
-
----
-
-## Visualization
-
-```text
-35427
-
-7 odd
-
-Answer
-
-35427
-```
-
-```text
-35420
-
-2 even
-0 even
-4 even
-
-5 odd
-
-Answer
-
-35
-```
-
----
-
-## Code
-
-```java
-class Solution {
-    public String largestOddNumber(String num) {
-
-        int n = num.length();
-
-        for(int i = n - 1; i >= 0; i--) {
-
-            int digit = num.charAt(i) - '0';
-
-            if(digit % 2 == 1) {
-                return num.substring(0, i + 1);
-            }
-        }
-
-        return "";
-    }
-}
-```
-
----
-
-## Remember
-
-```text
-Odd Number
-
-Only last digit matters
-
-Scan from end
-```
-
----
-
-# 4. Longest Common Prefix
-
-**Problem:** LeetCode 14
-
----
-
-## Interview Flow
-
-### Clarify
-
-- Empty array possible?
-- One string possible?
-
----
-
-## Brute Force
-
-Compare character by character across all strings.
-
----
-
-## Pattern
-
-### Prefix Shrinking Pattern
-
-Take first string as prefix.
-
-Keep shrinking until every string starts with it.
-
----
-
-## Plan
-
-```text
-prefix = first string
-
-For every string:
-
-while current string
-does not start with prefix
-
-shrink prefix
-
-return prefix
-```
-
----
-
-## Visualization
-
-```text
-flower
-flow
-flight
-
-prefix = flower
-
-flow doesn't start with flower
-
-flower
-flowe
-flow
-✔
-
-flight doesn't start with flow
-
-flo
-fl
-✔
-
-Answer = fl
-```
-
----
-
-## Code
-
-```java
-class Solution {
-
-    public String longestCommonPrefix(String[] strs) {
-
-        if(strs == null || strs.length == 0) {
-            return "";
-        }
-
-        String prefix = strs[0];
-
-        for(int i = 1; i < strs.length; i++) {
-
-            while(!strs[i].startsWith(prefix)) {
-
-                prefix =
-                    prefix.substring(0,
-                    prefix.length() - 1);
-            }
-
-            if(prefix.isEmpty()) {
-                return "";
-            }
-        }
-
-        return prefix;
-    }
-}
-```
-
----
-
-## Remember
-
-```text
-Take First String
-
-Shrink Until Match
-
-Done
-```
-
----
-
-# 5. Isomorphic Strings
-
-**Problem:** LeetCode 205
-
----
-
-# Method 1 : HashMap
-
----
-
-## Pattern
-
-### One-To-One Mapping Pattern
-
-```text
-a -> x
-
-Valid
-
-a -> x
-b -> y
-```
-
-```text
-a -> x
-b -> x
-
-Invalid
-```
-
----
-
-## Code
-
-```java
-class Solution {
-
-    public boolean isIsomorphic(String s, String t) {
-
-        HashMap<Character, Character> map =
-            new HashMap<>();
-
-        if(s.length() != t.length()) {
-            return false;
-        }
-
-        for(int i = 0; i < s.length(); i++) {
-
-            char original = s.charAt(i);
-            char replacement = t.charAt(i);
-
-            if(!map.containsKey(original)) {
-
-                if(!map.containsValue(replacement)) {
-                    map.put(original, replacement);
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
-
-                if(map.get(original) != replacement) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-}
-```
-
----
-
-# Method 2 : Array Mapping (Optimal)
-
----
-
-## Pattern
-
-### Last Seen Position Pattern
-
-Store last occurrence index.
-
-If both characters appeared at same positions before:
-
-Mapping is valid.
-
----
-
-## Visualization
-
-```text
-foo
-app
-
-f -> a
-
-o -> p
-
-last seen indexes always match
-```
-
----
-
-## Code
-
-```java
-class Solution {
-
-    public boolean isIsomorphic(String s, String t) {
-
-        int[] sMap = new int[256];
-        int[] tMap = new int[256];
-
-        if(s.length() != t.length()) {
-            return false;
-        }
-
-        for(int i = 0; i < s.length(); i++) {
-
-            char sChar = s.charAt(i);
-            char tChar = t.charAt(i);
-
-            if(sMap[sChar] != tMap[tChar]) {
-                return false;
-            }
-
-            sMap[sChar] = i + 1;
-            tMap[tChar] = i + 1;
-        }
-
-        return true;
-    }
-}
-```
-
----
-
-## Remember
-
-```text
-Same History
-
-Same Mapping
-
-Compare Last Seen Positions
-```
-
----
-
-# 6. Rotate String
-
-**Problem:** LeetCode 796
-
----
-
-## Interview Flow
-
-### Clarify
-
-- Rotation only?
-- Lengths must match?
-
----
-
-## Pattern
-
-### Double String Pattern
-
-All rotations exist inside:
-
-```text
-s + s
-```
-
----
-
-## Visualization
-
-```text
-s = abcde
-
-s+s
-
-abcdeabcde
-  cdeab
-
-Goal found
-```
-
----
-
-## Code
-
-```java
-class Solution {
-
-    public boolean rotateString(String s, String goal) {
-
-        if(s.length() != goal.length()) {
-            return false;
-        }
-
-        return (s + s).contains(goal);
-    }
-}
-```
-
----
-
-## Remember
-
-```text
-Rotation
+'('
 
 ↓
 
-s+s
+depth++
+
+')'
 
 ↓
 
-Contains Goal
+depth--
 ```
 
----
+Use the current depth to decide whether to include characters.
 
-# 7. Valid Anagram
-
-**Problem:** LeetCode 242
-
----
-
-## Interview Flow
-
-### Clarify
-
-- Lowercase only?
-- Unicode?
-
----
-
-## Pattern
-
-### Frequency Count Pattern
-
-Two strings are anagrams if:
+### Time Complexity
 
 ```text
-Every character count matches
+O(n)
 ```
 
 ---
 
-## Visualization
+# 10. Simulation Pattern
 
-```text
-listen
+## 💡 Idea
 
-l=1
-i=1
-s=1
-t=1
-e=1
-n=1
+Implement exactly what the problem statement describes.
 
-silent
+### Problems
 
-same frequencies
+* Reverse Words
+* Roman to Integer
+* atoi
 
-TRUE
-```
+### General Approach
 
----
+Read characters sequentially.
 
-## Code
+Simulate every required operation.
 
-```java
-class Solution {
+Be careful with
 
-    public boolean isAnagram(String s, String t) {
-
-        int[] sMap = new int[256];
-        int[] tMap = new int[256];
-
-        if(s.length() != t.length()) {
-            return false;
-        }
-
-        for(int i = 0; i < s.length(); i++) {
-
-            sMap[s.charAt(i)]++;
-            tMap[t.charAt(i)]++;
-        }
-
-        for(int i = 0; i < 256; i++) {
-
-            if(sMap[i] != tMap[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-```
+* Spaces
+* Signs
+* Punctuation
+* Word boundaries
+* Overflow
 
 ---
 
-# GOOGLE INTERVIEW REVISION SHEET
+# 📌 Final Revision Map
 
-```text
-REMOVE OUTER PARENTHESES
-→ Depth Counter
-
-REVERSE WORDS
-→ Reverse Traversal
-
-LARGEST ODD NUMBER
-→ Scan From End
-
-LONGEST COMMON PREFIX
-→ Prefix Shrinking
-
-ISOMORPHIC STRINGS
-→ Character Mapping
-
-ROTATE STRING
-→ (s+s).contains(goal)
-
-VALID ANAGRAM
-→ Frequency Count
-```
+| Pattern                             | Problems                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| Character Traversal                 | Largest Odd Number, Maximum Nesting Depth, Remove Outermost Parentheses |
+| Two Pointer                         | Palindrome Check, Reverse Words, Reverse Every Word                     |
+| Hashing                             | Isomorphic Strings, Anagram, Sort Characters by Frequency               |
+| Prefix Matching                     | Longest Common Prefix, Rotate String                                    |
+| Parsing                             | Roman to Integer, String to Integer (atoi)                              |
+| Expand Around Center                | Longest Palindromic Substring                                           |
+| Brute Force + Incremental Frequency | Sum of Beauty of All Substrings                                         |
+| Mathematical Counting               | Count Number of Substrings                                              |
+| Stack / Balance Simulation          | Remove Outermost Parentheses, Maximum Nesting Depth                     |
+| Simulation                          | Reverse Words, Roman to Integer, atoi                                   |
 
 ---
 
-# What To Say In Google Interview
+# 🎯 Pattern Recognition Guide
 
-For every problem:
+| If the question asks...                           | Think...                            |
+| ------------------------------------------------- | ----------------------------------- |
+| Scan characters while maintaining a counter/state | Character Traversal                 |
+| Compare from both ends or process words           | Two Pointers                        |
+| Count frequencies or map characters               | Hashing                             |
+| Compare strings from the beginning                | Prefix Matching                     |
+| Convert formatted strings into numbers            | Parsing                             |
+| Find the longest palindrome                       | Expand Around Center                |
+| Evaluate every substring efficiently              | Brute Force + Incremental Frequency |
+| Count substrings without generating them          | Mathematical Counting               |
+| Track nested parentheses                          | Stack / Balance Simulation          |
+| Follow the exact operations in the statement      | Simulation                          |
 
-1. Clarify constraints
+---
 
-2. Explain brute force
+# 🚀 The 10 Master String Patterns
 
-3. Identify pattern
+1. **Character Traversal** → Scan once while maintaining counters/state.
+2. **Two Pointers** → Compare or process characters/words efficiently.
+3. **Hashing** → Frequency counting or character mapping.
+4. **Prefix Matching** → Compare strings from the beginning.
+5. **Parsing** → Convert formatted strings into values.
+6. **Expand Around Center** → Generate palindromes efficiently.
+7. **Brute Force + Incremental Frequency** → Extend substrings while updating frequencies.
+8. **Mathematical Counting** → Use formulas instead of enumeration.
+9. **Stack / Balance Simulation** → Track nesting depth or balance.
+10. **Simulation** → Implement the process exactly as described.
 
-4. Explain plan in 4-5 lines
+---
 
-5. Code while speaking
+# ⭐ Interview Recognition Checklist
 
-6. If stuck > 60 sec, talk
+Before solving a String problem, ask yourself:
 
-7. Dry run one example
+* ✅ Am I simply scanning characters? → **Character Traversal**
+* ✅ Do I need two indices? → **Two Pointers**
+* ✅ Am I counting or mapping characters? → **Hashing**
+* ✅ Am I comparing prefixes? → **Prefix Matching**
+* ✅ Am I converting a string into another format? → **Parsing**
+* ✅ Does the problem involve palindromes? → **Expand Around Center**
+* ✅ Do I need information for every substring? → **Brute Force + Frequency**
+* ✅ Can the answer be computed using a formula? → **Mathematical Counting**
+* ✅ Are balanced parentheses involved? → **Stack / Balance Simulation**
+* ✅ Does the problem require following a sequence of operations exactly? → **Simulation**
+
+> **Rule of Thumb:** First identify what the problem asks you to do—scan, compare, count, parse, expand, or simulate. That immediately points you to the correct string pattern.
